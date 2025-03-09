@@ -37,13 +37,13 @@ public class UserController {
     }
 
     // Test
-    @GetMapping("/test")
+    @GetMapping("/user/test")
     public String test() {
         return "Ok";
     }
 
     // GetAll
-    @GetMapping("/user")
+    @GetMapping("/user/list")
     public List<UserModel> users() {
         return this.userService.getAll();
     }
