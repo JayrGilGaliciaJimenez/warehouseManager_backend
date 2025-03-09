@@ -50,7 +50,7 @@ public class Security {
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/login").permitAll()
-                .requestMatchers("/api/user").hasRole("ROLE_ADMIN")
+                .requestMatchers("/api/user").hasRole("ADMIN")
                 .anyRequest().authenticated());
         return http.build();
     }
