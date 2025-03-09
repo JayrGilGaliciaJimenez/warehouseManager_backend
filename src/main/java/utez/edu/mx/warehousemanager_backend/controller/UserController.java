@@ -68,7 +68,7 @@ public class UserController {
 
     // Deactivate User
     @PutMapping("/user/deactivate/{uuid}")
-    public ResponseEntity<Object> deactivateUser(@PathVariable("uuid") UUID uuid, @RequestBody UserModel request) {
+    public ResponseEntity<Object> deactivateUser(@PathVariable("uuid") UUID uuid) {
         try {
             UserModel user = this.getByUuid(uuid);
             if (user == null) {
