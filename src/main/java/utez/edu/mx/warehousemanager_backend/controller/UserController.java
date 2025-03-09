@@ -85,6 +85,25 @@ public class UserController {
         }
     }
 
+    // Activate User
+    @PutMapping("/user/activate/{uuid}")
+    public ResponseEntity<Object> activateUser(@PathVariable("uuid") UUID uuid) {
+        try {
+            UserModel user = this.getByUuid(uuid);
+            if (user == null) {
+                return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
+            } else {
+                UserStatusModel activateStatus = new UserStatusModel();
+                activateStatus.setId(1);
+                user.setStatus(activateStatus);
+                this.userService.save(user);
+                return Utilities.generateResponse(HttpStatus.OK, "User activated successfully");
+            }
+        } catch (Exception e) {
+            return Utilities.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // Delete User
     @DeleteMapping("/user/{uuid}")
     public ResponseEntity<Object> deleteUser(@PathVariable("uuid") UUID uuid) {
