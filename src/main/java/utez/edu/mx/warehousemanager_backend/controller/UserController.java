@@ -55,7 +55,7 @@ public class UserController {
     }
 
     // Register User
-    @PostMapping("/register")
+    @PostMapping("/user/register")
     public ResponseEntity<Object> createUser(@RequestBody UserModel request) {
         try {
             request.setPassword(passwordEncoder.encode(request.getPassword()));
