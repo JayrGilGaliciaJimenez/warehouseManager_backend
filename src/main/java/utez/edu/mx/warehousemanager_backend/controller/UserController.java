@@ -16,8 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import utez.edu.mx.warehousemanager_backend.model.EmailModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
 import utez.edu.mx.warehousemanager_backend.model.UserStatusModel;
+import utez.edu.mx.warehousemanager_backend.service.EmailService;
 import utez.edu.mx.warehousemanager_backend.service.UserService;
 import utez.edu.mx.warehousemanager_backend.utils.Utilities;
 
@@ -26,13 +28,15 @@ import utez.edu.mx.warehousemanager_backend.utils.Utilities;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
 
     private static final String RECORD_NOT_FOUND = "Record not found.";
     private static final String INTERNAL_SERVER_ERROR = "An internal server error occurred.";
 
-    UserController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    UserController(UserService userService, EmailService emailService, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -60,6 +64,13 @@ public class UserController {
         try {
             request.setPassword(passwordEncoder.encode(request.getPassword()));
             this.userService.save(request);
+
+            EmailModel emailModel = new EmailModel();
+            emailModel.setRecipient(request.getEmail());
+            emailModel.setSubject("Registro Exitoso");
+            emailModel.setMessage("Bienvenido " + request.getName() + ", tu registro ha sido exitoso.");
+            emailService.sendEmail(emailModel);
+
             return Utilities.generateResponse(HttpStatus.OK, "Record created succesfully");
         } catch (Exception e) {
             return Utilities.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR);
