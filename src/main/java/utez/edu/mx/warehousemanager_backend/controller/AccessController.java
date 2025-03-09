@@ -47,6 +47,20 @@ public class AccessController {
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             log.warn("Invalid credentials for user: {}", request.getEmail());
+
+            UserModel user = this.userService.findByEmail(request.getEmail());
+            if (user == null) {
+                log.warn("User with email {} not found", request.getEmail());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse("No user registered with this email", null, null, null));
+            }
+
+            if (user.getStatus().getName().equals("Inactive")) {
+                log.warn("User {} is inactive", request.getEmail());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new AuthResponse("User is inactive", null, null, null));
+            }
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new AuthResponse("Invalid credentials", null, null, null));
         }
