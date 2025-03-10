@@ -40,6 +40,8 @@ public class EmailService implements IEmailRepository {
             Context context = new Context();
             log.info("Context variables set");
             context.setVariable("message", emailModel.getMessage());
+            context.setVariable("email", emailModel.getEmail());
+            context.setVariable("password", emailModel.getPassword());
             String contenHTML = templateEngine.process("email", context);
             log.info("Email content processed");
 
