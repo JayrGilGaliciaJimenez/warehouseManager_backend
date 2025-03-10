@@ -39,8 +39,10 @@
             <h1>Welcome to Warehouse Manager!</h1>
         </div>
         <div class="content">
-            <p th:text="${message}"></p>
+            <h2 th:text="${message}"></h2>
             <p>We are pleased to inform you that you have been successfully registered in our system.</p>
+            <p><strong>Your email:</strong> <span th:text="${email}"></span></p>
+            <p><strong>Your temporary password:</strong> <span th:text="${password}"></span></p>
         </div>
     </div>
 </body>
