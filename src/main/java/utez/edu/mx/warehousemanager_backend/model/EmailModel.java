@@ -9,5 +9,7 @@ public class EmailModel {
 
     private String recipient;
     private String subject;
+    private String email;
+    private String password;
     private String message;
 }
