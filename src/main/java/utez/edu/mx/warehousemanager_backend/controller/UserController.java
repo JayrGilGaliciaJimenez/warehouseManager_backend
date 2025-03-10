@@ -62,6 +62,12 @@ public class UserController {
     @PostMapping("/user/register")
     public ResponseEntity<Object> createUser(@RequestBody UserModel request) {
         try {
+            UserModel existingUser = userService.findByEmail(request.getEmail());
+            if (existingUser != null) {
+                return Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Email already registered");
+            }
+            String temporaryPassword = request.getPassword();
+
             request.setPassword(passwordEncoder.encode(request.getPassword()));
             this.userService.save(request);
 
@@ -69,8 +75,9 @@ public class UserController {
             emailModel.setRecipient(request.getEmail());
             emailModel.setSubject("Registro Exitoso");
             emailModel.setMessage("Hello, " + request.getName() + " " + request.getLastname());
+            emailModel.setEmail(request.getEmail());
+            emailModel.setPassword(temporaryPassword);
             emailService.sendEmail(emailModel);
-
             return Utilities.generateResponse(HttpStatus.OK, "Record created succesfully");
         } catch (Exception e) {
             return Utilities.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR);
