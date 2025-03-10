@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Almacén</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .content {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bienvenido al Sistema de Gestión de Almacenes!</h1>
+        </div>
+        <div class="content">
+            <h2 th:text="${message}"></h2>
+            <p>Nos complace informarle que ha sido registrado con éxito en nuestro sistema.</p>
+            <p><strong>Tú correo:</strong> <span th:text="${email}"></span></p>
+            <p><strong>Tu contraseña temporal:</strong> <span th:text="${password}"></span></p>
+        </div>
+    </div>
+</body>
+
+</html>
