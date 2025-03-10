@@ -49,7 +49,7 @@ public class Security {
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/login").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/user").hasRole("ADMIN")
                 .anyRequest().authenticated());
         return http.build();
