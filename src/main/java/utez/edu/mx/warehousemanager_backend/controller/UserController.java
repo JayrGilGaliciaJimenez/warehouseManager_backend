@@ -74,7 +74,7 @@ public class UserController {
             EmailModel emailModel = new EmailModel();
             emailModel.setRecipient(request.getEmail());
             emailModel.setSubject("Registro Exitoso");
-            emailModel.setMessage("Hello, " + request.getName() + " " + request.getLastname());
+            emailModel.setMessage("Hola, " + request.getName() + " " + request.getLastname());
             emailModel.setEmail(request.getEmail());
             emailModel.setPassword(temporaryPassword);
             emailService.sendEmail(emailModel);
