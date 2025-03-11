@@ -34,3 +34,4 @@ build/
 
 ### Project ##
 src/main/resources/application.properties
+src/main/resources/email.properties
