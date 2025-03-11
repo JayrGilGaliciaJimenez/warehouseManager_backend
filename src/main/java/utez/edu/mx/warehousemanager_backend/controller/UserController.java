@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
-import utez.edu.mx.warehousemanager_backend.model.UserStatusModel;
 import utez.edu.mx.warehousemanager_backend.service.UserService;
 import utez.edu.mx.warehousemanager_backend.utils.Utilities;
 
@@ -74,9 +73,7 @@ public class UserController {
             if (user == null) {
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
             } else {
-                UserStatusModel deactivateStatus = new UserStatusModel();
-                deactivateStatus.setId(2);
-                user.setStatus(deactivateStatus);
+                user.setStatus("Inactive");
                 this.userService.save(user);
                 return Utilities.generateResponse(HttpStatus.OK, "User deactivated successfully");
             }
@@ -93,9 +90,7 @@ public class UserController {
             if (user == null) {
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
             } else {
-                UserStatusModel activateStatus = new UserStatusModel();
-                activateStatus.setId(1);
-                user.setStatus(activateStatus);
+                user.setStatus("Active");
                 this.userService.save(user);
                 return Utilities.generateResponse(HttpStatus.OK, "User activated successfully");
             }
