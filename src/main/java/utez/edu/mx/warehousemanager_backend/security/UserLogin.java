@@ -21,7 +21,7 @@ import utez.edu.mx.warehousemanager_backend.service.UserService;
 @Slf4j
 public class UserLogin implements UserDetailsService {
 
-    private UserService userService;
+    private final UserService userService;
 
     UserLogin(UserService userService) {
         this.userService = userService;
@@ -37,7 +37,7 @@ public class UserLogin implements UserDetailsService {
             throw new UsernameNotFoundException("Username " + username + " no existe en el sistema");
         }
 
-        if (user.getStatus().getName().equals("Inactive")) {
+        if (user.getStatus().equals("Inactive")) {
             log.warn("Username {} is inactive", username);
             throw new UsernameNotFoundException("Username " + username + " está deshabilitado");
         }
