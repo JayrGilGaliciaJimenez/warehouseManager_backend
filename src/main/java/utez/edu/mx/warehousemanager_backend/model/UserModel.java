@@ -2,7 +2,6 @@ package utez.edu.mx.warehousemanager_backend.model;
 
 import java.sql.Date;
 import java.util.UUID;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +21,7 @@ import lombok.AllArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,10 +38,9 @@ public class UserModel {
     private String lastname;
     private String email;
     private Date creationDate;
+    private String status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "status_id", nullable = false)
-    private UserStatusModel status;
+
 
     @PrePersist
     public void generateUUID() {
