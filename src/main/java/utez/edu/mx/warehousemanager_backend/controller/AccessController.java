@@ -55,7 +55,7 @@ public class AccessController {
                         .body(new AuthResponse("No user registered with this email", null, null, null));
             }
 
-            if (user.getStatus().getName().equals("Inactive")) {
+            if (user.getStatus().equals("Inactive")) {
                 log.warn("User {} is inactive", request.getEmail());
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new AuthResponse("User is inactive", null, null, null));
