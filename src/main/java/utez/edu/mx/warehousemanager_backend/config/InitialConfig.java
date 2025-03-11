@@ -8,17 +8,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import utez.edu.mx.warehousemanager_backend.model.RoleModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
-import utez.edu.mx.warehousemanager_backend.model.UserStatusModel;
 import utez.edu.mx.warehousemanager_backend.repository.IRoleRepository;
 import utez.edu.mx.warehousemanager_backend.repository.IUserRepository;
-import utez.edu.mx.warehousemanager_backend.repository.IUserStatusRepository;
+
+import java.time.LocalDateTime;
+
 
 @Configuration
 @RequiredArgsConstructor
 public class InitialConfig implements CommandLineRunner {
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
-    private final IUserStatusRepository userStatusRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${admin.name}")
@@ -35,32 +35,18 @@ public class InitialConfig implements CommandLineRunner {
         RoleModel adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> {
             RoleModel role = new RoleModel();
             role.setName("ROLE_ADMIN");
+            role.setCreationDate(LocalDateTime.now());
             return roleRepository.save(role);
         });
 
         RoleModel userRole = roleRepository.findByName("ROLE_USER").orElseGet(() -> {
             RoleModel role = new RoleModel();
             role.setName("ROLE_USER");
+            role.setCreationDate(LocalDateTime.now());
             return roleRepository.save(role);
         });
 
-        UserStatusModel activeStatus = userStatusRepository.findByName("Active").orElseGet(() -> {
-            UserStatusModel status = new UserStatusModel();
-            status.setName("Active");
-            return userStatusRepository.save(status);
-        });
 
-        UserStatusModel inactiveStatus = userStatusRepository.findByName("Inactive").orElseGet(() -> {
-            UserStatusModel status = new UserStatusModel();
-            status.setName("Inactive");
-            return userStatusRepository.save(status);
-        });
-
-        UserStatusModel pendingStatus = userStatusRepository.findByName("Pending").orElseGet(() -> {
-            UserStatusModel status = new UserStatusModel();
-            status.setName("Pending");
-            return userStatusRepository.save(status);
-        });
 
         if (userRepository.findByEmail(adminEmail) == null) {
             UserModel user = new UserModel();
@@ -70,7 +56,7 @@ public class InitialConfig implements CommandLineRunner {
             user.setUsername(adminName);
             user.setPassword(passwordEncoder.encode(adminPassword));
             user.setRole(adminRole);
-            user.setStatus(activeStatus);
+            user.setStatus("Active");
             userRepository.save(user);
         }
     }
