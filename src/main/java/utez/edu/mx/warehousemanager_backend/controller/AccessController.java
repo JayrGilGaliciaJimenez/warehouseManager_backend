@@ -31,7 +31,7 @@ public class AccessController {
         this.userService = usuarioService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         try {
             Authentication authentication = this.authenticationManager

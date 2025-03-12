@@ -49,7 +49,9 @@ public class Security {
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/login").permitAll()
+                .requestMatchers("/api/auth/login/").permitAll()
+                .requestMatchers("/api/auth/reset-email/").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/api/auth/reset-password/").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/api/user").hasRole("ADMIN")
                 .anyRequest().authenticated());
         return http.build();
