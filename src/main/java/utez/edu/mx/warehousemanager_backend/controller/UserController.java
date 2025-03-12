@@ -1,25 +1,10 @@
 package utez.edu.mx.warehousemanager_backend.controller;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.extern.slf4j.Slf4j;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.warehousemanager_backend.model.EmailModel;
 import utez.edu.mx.warehousemanager_backend.model.ResetTokenModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
@@ -28,6 +13,11 @@ import utez.edu.mx.warehousemanager_backend.repository.IPasswordResetToken;
 import utez.edu.mx.warehousemanager_backend.service.EmailService;
 import utez.edu.mx.warehousemanager_backend.service.UserService;
 import utez.edu.mx.warehousemanager_backend.utils.Utilities;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -44,18 +34,11 @@ public class UserController {
     private static final String LOG_RECORD_NOT_FOUND = "User not found with UUID: {}";
 
     UserController(UserService userService, EmailService emailService, BCryptPasswordEncoder passwordEncoder,
-            IPasswordResetToken passwordRepository) {
+                   IPasswordResetToken passwordRepository) {
         this.userService = userService;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.passwordRepository = passwordRepository;
-    }
-
-    // Test
-    @GetMapping("/user/test")
-    public String test() {
-        log.info("Test endpoint called");
-        return "Ok";
     }
 
     // GetAll
