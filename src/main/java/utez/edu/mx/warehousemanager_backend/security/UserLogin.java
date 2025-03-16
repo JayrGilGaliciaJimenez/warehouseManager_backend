@@ -37,7 +37,7 @@ public class UserLogin implements UserDetailsService {
             throw new UsernameNotFoundException("Username " + username + " no existe en el sistema");
         }
 
-        if (user.getStatus().getName().equals("Inactive")) {
+        if (user.getStatus().equals("Inactive")) {
             log.warn("Username {} is inactive", username);
             throw new UsernameNotFoundException("Username " + username + " está deshabilitado");
         }
