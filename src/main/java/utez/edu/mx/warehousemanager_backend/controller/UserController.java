@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.warehousemanager_backend.model.EmailModel;
 import utez.edu.mx.warehousemanager_backend.model.ResetTokenModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
+import utez.edu.mx.warehousemanager_backend.repository.IPasswordResetToken;
 import utez.edu.mx.warehousemanager_backend.service.EmailService;
 import utez.edu.mx.warehousemanager_backend.service.UserService;
 import utez.edu.mx.warehousemanager_backend.utils.Utilities;
