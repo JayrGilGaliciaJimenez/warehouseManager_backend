@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.warehousemanager_backend.model.EmailModel;
 import utez.edu.mx.warehousemanager_backend.model.ResetTokenModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
-import utez.edu.mx.warehousemanager_backend.model.UserStatusModel;
-import utez.edu.mx.warehousemanager_backend.repository.IPasswordResetToken;
 import utez.edu.mx.warehousemanager_backend.service.EmailService;
 import utez.edu.mx.warehousemanager_backend.service.UserService;
 import utez.edu.mx.warehousemanager_backend.utils.Utilities;
@@ -97,9 +95,7 @@ public class UserController {
                 log.warn(LOG_RECORD_NOT_FOUND, uuid);
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
             } else {
-                UserStatusModel deactivateStatus = new UserStatusModel();
-                deactivateStatus.setId(2);
-                user.setStatus(deactivateStatus);
+                user.setStatus("Inactive");
                 this.userService.save(user);
                 log.info("User deactivated successfully with UUID: {}", uuid);
                 return Utilities.generateResponse(HttpStatus.OK, "User deactivated successfully");
@@ -119,9 +115,7 @@ public class UserController {
                 log.warn(LOG_RECORD_NOT_FOUND, uuid);
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
             } else {
-                UserStatusModel activateStatus = new UserStatusModel();
-                activateStatus.setId(1);
-                user.setStatus(activateStatus);
+                user.setStatus("Active");
                 this.userService.save(user);
                 log.info("User activated successfully with UUID: {}", uuid);
                 return Utilities.generateResponse(HttpStatus.OK, "User activated successfully");
