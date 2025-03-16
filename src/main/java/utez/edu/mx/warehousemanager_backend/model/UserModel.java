@@ -45,10 +45,7 @@ public class UserModel {
     private String lastname;
     private String email;
     private Date creationDate;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "status_id", nullable = false)
-    private UserStatusModel status;
+    private String status;
 
     @PrePersist
     public void generateUUID() {
