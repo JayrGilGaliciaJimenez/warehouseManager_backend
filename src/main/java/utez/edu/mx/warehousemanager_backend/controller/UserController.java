@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import utez.edu.mx.warehousemanager_backend.model.EmailModel;
 import utez.edu.mx.warehousemanager_backend.model.ResetTokenModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
-import utez.edu.mx.warehousemanager_backend.model.UserStatusModel;
 import utez.edu.mx.warehousemanager_backend.repository.IPasswordResetToken;
 import utez.edu.mx.warehousemanager_backend.service.EmailService;
 import utez.edu.mx.warehousemanager_backend.service.UserService;
@@ -34,7 +33,7 @@ public class UserController {
     private static final String LOG_RECORD_NOT_FOUND = "User not found with UUID: {}";
 
     UserController(UserService userService, EmailService emailService, BCryptPasswordEncoder passwordEncoder,
-                   IPasswordResetToken passwordRepository) {
+            IPasswordResetToken passwordRepository) {
         this.userService = userService;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
@@ -60,25 +59,31 @@ public class UserController {
     public ResponseEntity<Object> createUser(@RequestBody UserModel request) {
         try {
             log.info("Attempting to register user with email: {}", request.getEmail());
-            UserModel existingUser = userService.findByEmail(request.getEmail());
-            if (existingUser != null) {
+            UserModel user = userService.findByEmail(request.getEmail());
+            if (user != null) {
                 log.warn("Email already registered: {}", request.getEmail());
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Email already registered");
             }
-            String temporaryPassword = request.getPassword();
-
+            log.info("Encoding password for user with email: {}", request.getEmail());
             request.setPassword(passwordEncoder.encode(request.getPassword()));
+
+            String activationToken = UUID.randomUUID().toString();
+            log.info("Generated activation token for user with email: {}", request.getEmail());
+            userService.saveActivationToken(user, activationToken);
+            request.setStatus("Pending");
+
+            log.info("Saving user with email: {}", request.getEmail());
             this.userService.save(request);
             log.info("User registered successfully with email: {}", request.getEmail());
 
+            String activationLink = "http://localhost:80/api/auth/reset-password/" + activationToken;
+            log.info("Generated activation link for user with email: {}", request.getEmail());
             EmailModel emailModel = new EmailModel();
             emailModel.setRecipient(request.getEmail());
-            emailModel.setSubject("Registro Exitoso");
-            emailModel.setMessage("Hola, " + request.getName() + " " + request.getLastname());
-            emailModel.setEmail(request.getEmail());
-            emailModel.setPassword(temporaryPassword);
+            emailModel.setSubject("Confirmación de Registro - Activa tu cuenta en las próximas 24 horas");
+            emailModel.setMessage(activationLink);
+            log.info("Sending registration email to: {}", request.getEmail());
             emailService.sendEmail(emailModel);
-            log.info("Registration email sent to: {}", request.getEmail());
 
             return Utilities.generateResponse(HttpStatus.OK, "Record created succesfully");
         } catch (Exception e) {
@@ -97,9 +102,7 @@ public class UserController {
                 log.warn(LOG_RECORD_NOT_FOUND, uuid);
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
             } else {
-                UserStatusModel deactivateStatus = new UserStatusModel();
-                deactivateStatus.setId(2);
-                user.setStatus(deactivateStatus);
+                user.setStatus("Inactive");
                 this.userService.save(user);
                 log.info("User deactivated successfully with UUID: {}", uuid);
                 return Utilities.generateResponse(HttpStatus.OK, "User deactivated successfully");
@@ -119,9 +122,7 @@ public class UserController {
                 log.warn(LOG_RECORD_NOT_FOUND, uuid);
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
             } else {
-                UserStatusModel activateStatus = new UserStatusModel();
-                activateStatus.setId(1);
-                user.setStatus(activateStatus);
+                user.setStatus("Active");
                 this.userService.save(user);
                 log.info("User activated successfully with UUID: {}", uuid);
                 return Utilities.generateResponse(HttpStatus.OK, "User activated successfully");

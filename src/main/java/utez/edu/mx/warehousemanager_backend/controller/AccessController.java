@@ -34,11 +34,29 @@ public class AccessController {
     @PostMapping("/auth/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         try {
+            UserModel user = this.userService.findByEmail(request.getEmail());
+            if (user == null) {
+                log.warn("User with email {} not found", request.getEmail());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse("No user registered with this email", null, null, null));
+            }
+
+            if (user.getStatus().equals("Inactive")) {
+                log.warn("User {} is inactive", request.getEmail());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new AuthResponse("User is inactive", null, null, null));
+            }
+
+            if (user.getStatus().equals("Pending")) {
+                log.warn("User {} has status Pending, must update password", request.getEmail());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new AuthResponse("User must update password", null, null, null));
+            }
+
             Authentication authentication = this.authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             log.warn("{}", authentication);
 
-            UserModel user = this.userService.findByEmail(request.getEmail());
             String accessToken = this.jwtTokenUtil.generatedToken(user);
             String role = user.getRole().getName();
             Integer id = user.getId();
@@ -47,22 +65,12 @@ public class AccessController {
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             log.warn("Invalid credentials for user: {}", request.getEmail());
-
-            UserModel user = this.userService.findByEmail(request.getEmail());
-            if (user == null) {
-                log.warn("User with email {} not found", request.getEmail());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new AuthResponse("No user registered with this email", null, null, null));
-            }
-
-            if (user.getStatus().getName().equals("Inactive")) {
-                log.warn("User {} is inactive", request.getEmail());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new AuthResponse("User is inactive", null, null, null));
-            }
-
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new AuthResponse("Invalid credentials", null, null, null));
+        } catch (Exception e) {
+            log.error("Error occurred during login for user: {}", request.getEmail(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthResponse("An error occurred", null, null, null));
         }
     }
 }
