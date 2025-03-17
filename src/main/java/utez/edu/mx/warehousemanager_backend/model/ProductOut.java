@@ -22,6 +22,7 @@ public class ProductOut {
     private Integer id;
     private UUID uuid;
     private String productName;
+    private String measurementUnit;
     private int quantity;
     private double unitPrice;
     private double totalAmount;
