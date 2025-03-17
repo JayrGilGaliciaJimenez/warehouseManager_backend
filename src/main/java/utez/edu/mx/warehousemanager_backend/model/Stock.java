@@ -21,7 +21,7 @@ public class Stock {
    private Integer id;
    private UUID uuid;
    private String productName;
-   private String mesurementUnit;
+   private String measurementUnit;
    private int quantity;
    @Column(columnDefinition = "DECIMAL(10, 2) DEFAULT 00.00")
    private double unitPrice;
