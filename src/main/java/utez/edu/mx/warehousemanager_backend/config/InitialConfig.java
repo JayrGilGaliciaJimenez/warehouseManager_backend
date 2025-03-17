@@ -11,6 +11,8 @@ import utez.edu.mx.warehousemanager_backend.model.UserModel;
 import utez.edu.mx.warehousemanager_backend.repository.IRoleRepository;
 import utez.edu.mx.warehousemanager_backend.repository.IUserRepository;
 
+import java.time.LocalDateTime;
+
 @Configuration
 @RequiredArgsConstructor
 public class InitialConfig implements CommandLineRunner {
@@ -32,12 +34,14 @@ public class InitialConfig implements CommandLineRunner {
         RoleModel adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> {
             RoleModel role = new RoleModel();
             role.setName("ROLE_ADMIN");
+            role.setCreationDate(LocalDateTime.now());
             return roleRepository.save(role);
         });
 
         RoleModel userRole = roleRepository.findByName("ROLE_USER").orElseGet(() -> {
             RoleModel role = new RoleModel();
             role.setName("ROLE_USER");
+            role.setCreationDate(LocalDateTime.now());
             return roleRepository.save(role);
         });
 
