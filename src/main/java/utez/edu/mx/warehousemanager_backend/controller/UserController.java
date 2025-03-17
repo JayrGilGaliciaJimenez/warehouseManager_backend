@@ -165,6 +165,11 @@ public class UserController {
                 return Utilities.generateResponse(HttpStatus.NOT_FOUND, RECORD_NOT_FOUND);
             }
 
+            if ("Pending".equals(user.getStatus())) {
+                log.warn("User with email {} has status Pending and must activate their account first", email);
+                return Utilities.generateResponse(HttpStatus.UNAUTHORIZED, "User must activate their account first");
+            }
+
             ResetTokenModel existingToken = passwordRepository.findByUserAndExpiryDateAfter(user, LocalDateTime.now());
             if (existingToken != null) {
                 log.warn("Active password reset token already exists for email: {}", email);
