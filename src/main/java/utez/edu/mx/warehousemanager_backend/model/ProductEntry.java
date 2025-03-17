@@ -25,17 +25,17 @@ public class ProductEntry {
     private String productName;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    private String mesurementUnit;
+    private String measurementUnit;
     private int quantity;
     private double unitPrice;
     private double totalAmount;
     private LocalDateTime entryDate = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "suplier_id", nullable = false)
+    @JoinColumn(name = "suplierId", nullable = false)
     private Suplier suplier;
 
     private Integer relatedUserId;
