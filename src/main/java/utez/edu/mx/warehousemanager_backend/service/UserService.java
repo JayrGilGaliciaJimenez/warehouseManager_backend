@@ -62,4 +62,12 @@ public class UserService {
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(10));
         passwordRepository.save(resetToken);
     }
+
+    public void saveActivationToken(UserModel user, String token) {
+        ResetTokenModel resetToken = new ResetTokenModel();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setExpiryDate(LocalDateTime.now().plusHours(24));
+        passwordRepository.save(resetToken);
+    }
 }
