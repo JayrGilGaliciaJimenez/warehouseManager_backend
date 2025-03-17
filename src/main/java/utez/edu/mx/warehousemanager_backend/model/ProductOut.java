@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "product_out")
+@Table(name = "product_outs")
 public class ProductOut {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
