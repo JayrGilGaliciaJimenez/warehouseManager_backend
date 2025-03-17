@@ -59,25 +59,31 @@ public class UserController {
     public ResponseEntity<Object> createUser(@RequestBody UserModel request) {
         try {
             log.info("Attempting to register user with email: {}", request.getEmail());
-            UserModel existingUser = userService.findByEmail(request.getEmail());
-            if (existingUser != null) {
+            UserModel user = userService.findByEmail(request.getEmail());
+            if (user != null) {
                 log.warn("Email already registered: {}", request.getEmail());
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Email already registered");
             }
-            String temporaryPassword = request.getPassword();
-
+            log.info("Encoding password for user with email: {}", request.getEmail());
             request.setPassword(passwordEncoder.encode(request.getPassword()));
+
+            String activationToken = UUID.randomUUID().toString();
+            log.info("Generated activation token for user with email: {}", request.getEmail());
+            userService.saveActivationToken(user, activationToken);
+            request.setStatus("Pending");
+
+            log.info("Saving user with email: {}", request.getEmail());
             this.userService.save(request);
             log.info("User registered successfully with email: {}", request.getEmail());
 
+            String activationLink = "http://localhost:80/api/auth/reset-password/" + activationToken;
+            log.info("Generated activation link for user with email: {}", request.getEmail());
             EmailModel emailModel = new EmailModel();
             emailModel.setRecipient(request.getEmail());
-            emailModel.setSubject("Registro Exitoso");
-            emailModel.setMessage("Hola, " + request.getName() + " " + request.getLastname());
-            emailModel.setEmail(request.getEmail());
-            emailModel.setPassword(temporaryPassword);
+            emailModel.setSubject("Confirmación de Registro - Activa tu cuenta en las próximas 24 horas");
+            emailModel.setMessage(activationLink);
+            log.info("Sending registration email to: {}", request.getEmail());
             emailService.sendEmail(emailModel);
-            log.info("Registration email sent to: {}", request.getEmail());
 
             return Utilities.generateResponse(HttpStatus.OK, "Record created succesfully");
         } catch (Exception e) {
