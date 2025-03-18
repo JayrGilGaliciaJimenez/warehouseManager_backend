@@ -9,9 +9,14 @@ import org.springframework.http.HttpStatus;
 @Setter
 @AllArgsConstructor
 public class ApiResponse<T> {
-    private HttpStatus status;
+    private T data;
     private String message;
     private String errorCode;
-    private T data;
+    private HttpStatus status;
 
+    public ApiResponse(T data, String message, HttpStatus status) {
+        this.data = data;
+        this.message = message;
+        this.status = status;
+    }
 }
