@@ -19,4 +19,8 @@ public class ApiResponse<T> {
         this.message = message;
         this.status = status;
     }
+    public ApiResponse(String message, HttpStatus status) {
+        this.message = message;
+        this.status = status;
+    }
 }
