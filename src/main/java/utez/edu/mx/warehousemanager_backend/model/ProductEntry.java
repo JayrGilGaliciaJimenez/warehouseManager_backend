@@ -1,10 +1,7 @@
 package utez.edu.mx.warehousemanager_backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 
 import java.time.LocalDateTime;
@@ -14,6 +11,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "product_entries")
 public class ProductEntry {
