@@ -1,5 +1,7 @@
 package utez.edu.mx.warehousemanager_backend.jwt;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +15,5 @@ public class AuthResponse {
     private String email;
     private String accessToken;
     private String role;
-    private Integer id;
+    private UUID uuid;
 }
