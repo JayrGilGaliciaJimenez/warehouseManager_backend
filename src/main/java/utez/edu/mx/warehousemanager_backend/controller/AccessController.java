@@ -1,5 +1,7 @@
 package utez.edu.mx.warehousemanager_backend.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +20,7 @@ import utez.edu.mx.warehousemanager_backend.service.UserService;
 @RestController
 @Slf4j
 @RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class AccessController {
 
     private final AuthenticationManager authenticationManager;
@@ -59,8 +62,8 @@ public class AccessController {
 
             String accessToken = this.jwtTokenUtil.generatedToken(user);
             String role = user.getRole().getName();
-            Integer id = user.getId();
-            AuthResponse response = new AuthResponse(request.getEmail(), accessToken, role, id);
+            UUID uuid = user.getUuid();
+            AuthResponse response = new AuthResponse(request.getEmail(), accessToken, role, uuid);
 
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
