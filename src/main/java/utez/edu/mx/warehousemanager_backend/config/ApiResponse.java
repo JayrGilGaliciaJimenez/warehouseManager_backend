@@ -1,13 +1,14 @@
 package utez.edu.mx.warehousemanager_backend.config;
 
-import lombok.AllArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
     private T data;
     private String message;
