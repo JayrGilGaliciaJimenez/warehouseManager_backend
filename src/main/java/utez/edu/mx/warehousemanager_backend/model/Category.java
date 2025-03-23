@@ -1,10 +1,7 @@
 package utez.edu.mx.warehousemanager_backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -25,10 +23,8 @@ public class Category {
     private LocalDateTime creationDate = LocalDateTime.now();
     private Integer relatedUserId;
 
-
     @OneToOne(mappedBy = "category")
     private ProductEntry productEntry;
-
 
     @PrePersist
     public void generateUUID() {
@@ -36,7 +32,5 @@ public class Category {
             uuid = UUID.randomUUID();
         }
     }
-
-
 
 }
