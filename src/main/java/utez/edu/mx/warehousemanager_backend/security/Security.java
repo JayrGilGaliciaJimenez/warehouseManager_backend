@@ -53,6 +53,11 @@ public class Security {
                 .requestMatchers("/api/auth/reset-email").permitAll()
                 .requestMatchers("/api/auth/reset-password/**").permitAll()
                 .requestMatchers("/api/user").hasRole("ADMIN")
+                .requestMatchers("/api/category").hasRole("USER")
+                .requestMatchers("/api/suplier").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/productEntry").hasRole("USER")
+                .requestMatchers("/api/stock").hasRole("USER")
+                .requestMatchers("/api/productOut").hasRole("USER")
                 .anyRequest().authenticated());
         return http.build();
     }

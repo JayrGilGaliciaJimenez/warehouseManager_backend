@@ -1,17 +1,27 @@
 package utez.edu.mx.warehousemanager_backend.config;
 
-import lombok.AllArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-    private HttpStatus status;
+    private T data;
     private String message;
     private String errorCode;
-    private T data;
+    private HttpStatus status;
 
+    public ApiResponse(T data, String message, HttpStatus status) {
+        this.data = data;
+        this.message = message;
+        this.status = status;
+    }
+    public ApiResponse(String message, HttpStatus status) {
+        this.message = message;
+        this.status = status;
+    }
 }
