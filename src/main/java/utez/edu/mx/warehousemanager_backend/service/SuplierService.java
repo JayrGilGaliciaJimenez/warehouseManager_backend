@@ -7,9 +7,8 @@ import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.Suplier.SuplierDto;
 import utez.edu.mx.warehousemanager_backend.model.Suplier;
 import utez.edu.mx.warehousemanager_backend.repository.SuplierRepository;
-
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class SuplierService {
@@ -20,9 +19,18 @@ public class SuplierService {
     }
 
     public ResponseEntity<ApiResponse<Suplier>> save(SuplierDto dto) {
+        int existingSupliersCount = suplierRepository.countCoincidencesByName(dto.getName().trim());
+        if (existingSupliersCount > 0) {
+            ApiResponse<Suplier> response = new ApiResponse<>(
+                    "Suplier already exists",
+                    HttpStatus.CONFLICT
+            );
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+
         Suplier suplier = Suplier.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
+                .name(dto.getName().trim())
+                .email(dto.getEmail().trim())
                 .build();
         ApiResponse<Suplier> response = new ApiResponse<>(
                 suplierRepository.save(suplier),

@@ -9,5 +9,8 @@ public interface SuplierRepository extends JpaRepository<Suplier, Integer> {
     @Query(value = "SELECT * FROM supliers WHERE uuid=:uuid", nativeQuery = true)
     Suplier findByUuid(String uuid);
 
+    @Query(value = "SELECT COUNT(s) FROM Suplier s WHERE s.name LIKE %:name%")
+    int countCoincidencesByName(String name);
+
 
 }
