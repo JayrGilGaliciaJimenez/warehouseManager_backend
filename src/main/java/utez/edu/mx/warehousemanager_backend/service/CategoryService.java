@@ -7,7 +7,6 @@ import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.Category.CategoryDto;
 import utez.edu.mx.warehousemanager_backend.model.Category;
 import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class CategoryService {
         }
 
         Category savedCategory = Category.builder()
-                .name(dto.getName())
+                .name(dto.getName().trim())
                 .creationDate(LocalDateTime.now())
                 .build();
 
