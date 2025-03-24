@@ -1,12 +1,14 @@
 package utez.edu.mx.warehousemanager_backend.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
-
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
     private final JdbcTemplate jdbcTemplate;
 
     public DatabaseInitializer(JdbcTemplate jdbcTemplate) {
@@ -80,8 +82,20 @@ public class DatabaseInitializer implements CommandLineRunner {
                     END;
                 """;
 
-        jdbcTemplate.execute(createProductEntriesToStockTrigger);
-        jdbcTemplate.execute(createProductOutsToStockTrigger);
+        try {
+            jdbcTemplate.execute(createProductEntriesToStockTrigger);
+            logger.info("Trigger 'product_entries_to_stock' created successfully.");
+        } catch (Exception e) {
+            logger.error("Error creating trigger 'product_entries_to_stock': ", e);
+        }
 
+        try {
+            jdbcTemplate.execute(createProductOutsToStockTrigger);
+            logger.info("Trigger 'product_outs_to_stock' created successfully.");
+        } catch (Exception e) {
+            logger.error("Error creating trigger 'product_outs_to_stock': ", e);
+        }
     }
+
+
 }
