@@ -48,7 +48,6 @@ public class Security {
                                 (request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)));
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/reset-email").permitAll()
                 .requestMatchers("/api/auth/reset-password/**").permitAll()
