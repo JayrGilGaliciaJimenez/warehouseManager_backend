@@ -90,7 +90,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             jdbcTemplate.execute(createProductEntriesToStockTrigger);
             logger.info("Trigger 'product_entries_to_stock' created successfully.");
         } catch (Exception e) {
-            productOutService.sqlException(e.getMessage());
+            
             logger.error("Error creating trigger 'product_entries_to_stock': ", e);
         }
 
@@ -98,7 +98,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             jdbcTemplate.execute(createProductOutsToStockTrigger);
             logger.info("Trigger 'product_outs_to_stock' created successfully.");
         } catch (Exception e) {
-            productOutService.sqlException(e.getMessage());
+
             logger.error("Error creating trigger 'product_outs_to_stock': ", e);
         }
     }
