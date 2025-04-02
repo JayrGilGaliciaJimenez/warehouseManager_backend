@@ -55,6 +55,7 @@ public class Security {
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/reset-email").permitAll()
                 .requestMatchers("/api/auth/reset-password/**").permitAll()
+                .requestMatchers("/api/auth/activate-account/**").permitAll()
                 .requestMatchers("/api/user").hasRole("ADMIN")
                 .requestMatchers("/api/category").hasRole("USER")
                 .requestMatchers("/api/suplier").hasAnyRole("USER", "ADMIN")
