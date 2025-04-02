@@ -1,9 +1,6 @@
 package utez.edu.mx.warehousemanager_backend.controller.ProductOut;
-
 import lombok.Value;
-
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * DTO for {@link utez.edu.mx.warehousemanager_backend.model.ProductOut}
