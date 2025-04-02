@@ -43,6 +43,8 @@ public class Security {
         return new BCryptPasswordEncoder();
     }
 
+    String USER = "USER";
+    String ADMIN = "ADMIN";
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -55,12 +57,13 @@ public class Security {
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/reset-email").permitAll()
                 .requestMatchers("/api/auth/reset-password/**").permitAll()
-                .requestMatchers("/api/user").hasRole("ADMIN")
-                .requestMatchers("/api/category").hasRole("USER")
-                .requestMatchers("/api/suplier").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/productEntry").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/stock").hasRole("USER")
-                .requestMatchers("/api/productOut").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/auth/activate-account/**").permitAll()
+                .requestMatchers("/api/user").hasRole(ADMIN)
+                .requestMatchers("/api/category").hasRole(USER)
+                .requestMatchers("/api/suplier").hasAnyRole(USER, ADMIN)
+                .requestMatchers("/api/productEntry").hasAnyRole(USER, ADMIN)
+                .requestMatchers("/api/stock").hasRole(USER)
+                .requestMatchers("/api/productOut").hasAnyRole(USER, ADMIN)
                 .anyRequest().authenticated());
         http.cors().configurationSource(corsConfigurationSource());
         return http.build();
