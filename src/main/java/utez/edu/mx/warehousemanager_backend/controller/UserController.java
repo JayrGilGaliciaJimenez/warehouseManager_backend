@@ -60,22 +60,22 @@ public class UserController {
     public ResponseEntity<Object> createUser(@RequestBody UserModel request) {
         try {
             log.info("Attempting to register user with email: {}", request.getEmail());
-            UserModel user = userService.findByEmail(request.getEmail());
-            if (user != null) {
+            UserModel existingUser = userService.findByEmail(request.getEmail());
+            if (existingUser != null) {
                 log.warn("Email already registered: {}", request.getEmail());
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Email already registered");
             }
+
             log.info("Encoding password for user with email: {}", request.getEmail());
             request.setPassword(passwordEncoder.encode(request.getPassword()));
-
-            String activationToken = UUID.randomUUID().toString();
-            log.info("Generated activation token for user with email: {}", request.getEmail());
-            userService.saveActivationToken(user, activationToken);
             request.setStatus("Pending");
 
             log.info("Saving user with email: {}", request.getEmail());
             this.userService.save(request);
-            log.info("User registered successfully with email: {}", request.getEmail());
+
+            String activationToken = UUID.randomUUID().toString();
+            log.info("Generated activation token for user with email: {}", request.getEmail());
+            userService.saveActivationToken(request, activationToken);
 
             String activationLink = "http://localhost:5173/active-account/" + activationToken;
             log.info("Generated activation link for user with email: {}", request.getEmail());
@@ -86,7 +86,8 @@ public class UserController {
             log.info("Sending registration email to: {}", request.getEmail());
             emailService.sendEmail(emailModel, "activate_account");
 
-            return Utilities.generateResponse(HttpStatus.OK, "Record created succesfully");
+            log.info("User registered successfully with email: {}", request.getEmail());
+            return Utilities.generateResponse(HttpStatus.OK, "Record created successfully");
         } catch (Exception e) {
             log.error("Error occurred while registering user", e);
             return Utilities.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR);
@@ -213,6 +214,53 @@ public class UserController {
             user.setPassword(passwordEncoder.encode(newPassword));
             passwordRepository.delete(resetToken);
             log.info("Password reset successfully for user with email: {}", user.getEmail());
+            return new ResponseEntity<>(Utilities.generateResponse(HttpStatus.OK, "Password reset successfully"),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error occurred while resetting password with token: {}", token, e);
+            return new ResponseEntity<>(
+                    Utilities.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Activate Account
+    @PostMapping("/auth/activate-account/{token}")
+    public ResponseEntity<Object> activateAccount(@PathVariable String token,
+            @RequestBody Map<String, String> request) {
+        log.info("Received request to activate account with token: {}", token);
+        try {
+            log.info("Extracting password from request body for token: {}", token);
+            String newPassword = request.get("password");
+
+            log.info("Searching for reset token in the repository: {}", token);
+            ResetTokenModel resetToken = passwordRepository.findByToken(token);
+
+            if (resetToken == null) {
+                log.warn("Reset token not found: {}", token);
+                return new ResponseEntity<>(Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Invalid token"),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+                log.warn("Reset token expired: {}", token);
+                return new ResponseEntity<>(Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Token expired"),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            log.info("Reset token is valid. Fetching associated user.");
+            UserModel user = resetToken.getUser();
+            log.info("Encoding new password for user with email: {}", user.getEmail());
+            user.setPassword(passwordEncoder.encode(newPassword));
+
+            log.info("Deleting reset token from repository for token: {}", token);
+            passwordRepository.delete(resetToken);
+
+            log.info("Updating user status to 'Active' for email: {}", user.getEmail());
+            user.setStatus("Active");
+            this.userService.save(user);
+
+            log.info("Account activated successfully for user with email: {}", user.getEmail());
             return new ResponseEntity<>(Utilities.generateResponse(HttpStatus.OK, "Password reset successfully"),
                     HttpStatus.OK);
         } catch (Exception e) {
