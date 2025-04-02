@@ -1,9 +1,10 @@
 package utez.edu.mx.warehousemanager_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -23,8 +24,9 @@ public class Category {
     private LocalDateTime creationDate = LocalDateTime.now();
     private Integer relatedUserId;
 
-    @OneToOne(mappedBy = "category")
-    private ProductEntry productEntry;
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<ProductEntry> productEntries;
 
     @PrePersist
     public void generateUUID() {
@@ -32,5 +34,4 @@ public class Category {
             uuid = UUID.randomUUID();
         }
     }
-
 }
