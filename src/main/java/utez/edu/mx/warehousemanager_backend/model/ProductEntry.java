@@ -3,7 +3,6 @@ package utez.edu.mx.warehousemanager_backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,7 +21,7 @@ public class ProductEntry {
     private UUID uuid;
     private String productName;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
@@ -44,5 +43,4 @@ public class ProductEntry {
             uuid = UUID.randomUUID();
         }
     }
-
 }
