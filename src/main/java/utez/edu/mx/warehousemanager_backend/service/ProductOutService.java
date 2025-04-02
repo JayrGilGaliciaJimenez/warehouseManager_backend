@@ -8,6 +8,7 @@ import utez.edu.mx.warehousemanager_backend.controller.ProductOut.ProductOutDto;
 import utez.edu.mx.warehousemanager_backend.model.ProductOut;
 import utez.edu.mx.warehousemanager_backend.repository.ProductOutRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,6 +26,7 @@ public class ProductOutService {
                 .quantity(dto.getQuantity())
                 .totalAmount(dto.getTotalAmount())
                 .measurementUnit(dto.getMeasurementUnit())
+                .outDate(LocalDateTime.now())
                 .reciverName(dto.getReciverName())
                 .build();
 
