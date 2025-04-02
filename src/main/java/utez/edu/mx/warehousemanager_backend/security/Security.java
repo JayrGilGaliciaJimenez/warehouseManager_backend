@@ -64,6 +64,7 @@ public class Security {
                 .requestMatchers("/api/productEntry").hasAnyRole(USER, ADMIN)
                 .requestMatchers("/api/stock").hasRole(USER)
                 .requestMatchers("/api/productOut").hasAnyRole(USER, ADMIN)
+
                 .anyRequest().authenticated());
         http.cors().configurationSource(corsConfigurationSource());
         return http.build();

@@ -10,4 +10,5 @@ public class EmailModel {
     private String recipient;
     private String subject;
     private String message;
+    private String templateName;
 }
