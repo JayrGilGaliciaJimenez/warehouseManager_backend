@@ -58,9 +58,9 @@ public class Security {
                 .requestMatchers("/api/user").hasRole("ADMIN")
                 .requestMatchers("/api/category").hasRole("USER")
                 .requestMatchers("/api/suplier").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/productEntry").hasRole("USER")
+                .requestMatchers("/api/productEntry").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/stock").hasRole("USER")
-                .requestMatchers("/api/productOut").hasRole("USER")
+                .requestMatchers("/api/productOut").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated());
         http.cors().configurationSource(corsConfigurationSource());
         return http.build();
