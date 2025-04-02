@@ -24,7 +24,7 @@ public class EmailService implements IEmailRepository {
     }
 
     @Override
-    public void sendEmail(EmailModel emailModel) throws MessagingException {
+    public void sendEmail(EmailModel emailModel, String templateName) throws MessagingException {
         try {
             log.info("Preparing to send email to {}", emailModel.getRecipient());
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -40,10 +40,10 @@ public class EmailService implements IEmailRepository {
             Context context = new Context();
             log.info("Context variables set");
             context.setVariable("message", emailModel.getMessage());
-            String contenHTML = templateEngine.process("activate_account", context);
+            String contentHTML = templateEngine.process(templateName, context);
             log.info("Email content processed");
-
-            helper.setText(contenHTML, true);
+            
+            helper.setText(contentHTML, true);
             log.info("Email content set");
             javaMailSender.send(message);
             log.info("Email sent successfully to {}", emailModel.getRecipient());
