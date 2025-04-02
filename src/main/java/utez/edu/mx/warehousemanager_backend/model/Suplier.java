@@ -27,8 +27,8 @@ public class Suplier {
     private LocalDateTime creationDate = LocalDateTime.now();
     private Integer relatedUserId;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "suplier")
+    @JsonIgnore
     private Set<ProductEntry> productEntries = new HashSet<>();
 
     @PrePersist
