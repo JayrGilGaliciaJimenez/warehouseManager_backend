@@ -10,6 +10,7 @@ import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.SuplierRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,6 +33,7 @@ public class ProductEntryService {
                 .quantity(dto.getQuantity())
                 .unitPrice(dto.getUnitPrice())
                 .totalAmount(dto.getTotalAmount())
+                .entryDate(LocalDateTime.now())
                 .measurementUnit(dto.getMeasurementUnit())
                 .build();
 
