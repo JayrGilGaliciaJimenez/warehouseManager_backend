@@ -1,5 +1,6 @@
 package utez.edu.mx.warehousemanager_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class ProductEntry {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId", nullable = false)
+    @JsonIgnore
     private Category category;
 
     private String measurementUnit;
