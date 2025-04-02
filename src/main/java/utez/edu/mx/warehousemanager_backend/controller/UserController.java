@@ -21,6 +21,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;
@@ -76,14 +77,14 @@ public class UserController {
             this.userService.save(request);
             log.info("User registered successfully with email: {}", request.getEmail());
 
-            String activationLink = "http://localhost:80/api/auth/reset-password/" + activationToken;
+            String activationLink = "http://localhost:5173/active-account/" + activationToken;
             log.info("Generated activation link for user with email: {}", request.getEmail());
             EmailModel emailModel = new EmailModel();
             emailModel.setRecipient(request.getEmail());
             emailModel.setSubject("Confirmación de Registro - Activa tu cuenta en las próximas 24 horas");
             emailModel.setMessage(activationLink);
             log.info("Sending registration email to: {}", request.getEmail());
-            emailService.sendEmail(emailModel);
+            emailService.sendEmail(emailModel, "activate_account");
 
             return Utilities.generateResponse(HttpStatus.OK, "Record created succesfully");
         } catch (Exception e) {
@@ -178,6 +179,15 @@ public class UserController {
 
             String token = UUID.randomUUID().toString();
             userService.savePasswordResetToken(user, token);
+
+            String resetLink = "http://localhost:5173/reset-password/" + token;
+            log.info("Generated reset password link for user with email: {}", email);
+            EmailModel emailModel = new EmailModel();
+            emailModel.setRecipient(email);
+            emailModel.setSubject("Recuperación de Contraseña - Recupera tu contraseña en las próximas 24 horas");
+            emailModel.setMessage(resetLink);
+            log.info("Sending registration email to: {}", email);
+            emailService.sendEmail(emailModel, "reset_password");
             log.info("Password reset token generated for email: {}", email);
             return new ResponseEntity<>(Utilities.generateResponse(HttpStatus.OK, "Token: " + token), HttpStatus.OK);
         } catch (Exception e) {
