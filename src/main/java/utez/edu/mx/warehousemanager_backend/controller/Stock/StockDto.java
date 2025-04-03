@@ -14,6 +14,6 @@ public class StockDto implements Serializable {
     int quantity;
     double unitPrice;
     double totalAmount;
-    Integer suplierId;
+    Integer supplierId;
 }
 

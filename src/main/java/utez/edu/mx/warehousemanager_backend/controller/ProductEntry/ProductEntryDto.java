@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Value
 public class ProductEntryDto implements Serializable {
     String productName;
-    Integer suplierId;
+    Integer supplierId;
     Integer categoryId;
     int quantity;
     double unitPrice;

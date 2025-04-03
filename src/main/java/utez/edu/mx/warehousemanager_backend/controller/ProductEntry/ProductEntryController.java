@@ -18,7 +18,7 @@ public class ProductEntryController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ApiResponse<ProductEntry>> save(@RequestBody ProductEntryDto dto){
+    public ResponseEntity<ApiResponse<List<ProductEntryDto>>> save(@RequestBody EntryDto dto){
         return productEntryService.save(dto);
     }
 
