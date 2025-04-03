@@ -15,8 +15,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "supliers")
-public class Suplier {
+@Table(name = "suppliers")
+public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -27,7 +27,7 @@ public class Suplier {
     private LocalDateTime creationDate = LocalDateTime.now();
     private Integer relatedUserId;
 
-    @OneToMany(mappedBy = "suplier")
+    @OneToMany(mappedBy = "supplier")
     @JsonIgnore
     private Set<ProductEntry> productEntries = new HashSet<>();
 

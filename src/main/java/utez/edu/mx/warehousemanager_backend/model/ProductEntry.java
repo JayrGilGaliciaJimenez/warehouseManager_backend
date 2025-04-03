@@ -34,8 +34,8 @@ public class ProductEntry {
     private LocalDateTime entryDate = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "suplierId", nullable = false)
-    private Suplier suplier;
+    @JoinColumn(name = "supplierId", nullable = false)
+    private Supplier supplier;
 
     private Integer relatedUserId;
 
