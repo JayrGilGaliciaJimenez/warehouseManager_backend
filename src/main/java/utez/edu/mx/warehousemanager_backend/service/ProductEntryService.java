@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
+import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.EntryDto;
 import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.ProductEntryDto;
 import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
@@ -25,23 +26,28 @@ public class ProductEntryService {
         this.supplierRepository = supplierRepository;
     }
 
-    public ResponseEntity<ApiResponse<ProductEntry>> save(ProductEntryDto dto) {
-        ProductEntry productEntry = ProductEntry.builder()
-                .productName(dto.getProductName())
-                .supplier(supplierRepository.findById(dto.getSuplierId()).orElse(null))
-                .category(categoryRepository.findById(dto.getCategoryId()).orElse(null))
-                .quantity(dto.getQuantity())
-                .unitPrice(dto.getUnitPrice())
-                .totalAmount(dto.getTotalAmount())
-                .entryDate(LocalDateTime.now())
-                .measurementUnit(dto.getMeasurementUnit())
-                .build();
+    public ResponseEntity<ApiResponse<List<ProductEntryDto>>> save(EntryDto entryDto) {
+        for(ProductEntryDto productEntryDto : entryDto.getProductEntryList()){
+            ProductEntry productEntry = ProductEntry.builder()
+                    .productName(productEntryDto.getProductName())
+                    .supplier(supplierRepository.findById(productEntryDto.getSupplierId()).orElse(null))
+                    .category(categoryRepository.findById(productEntryDto.getCategoryId()).orElse(null))
+                    .quantity(productEntryDto.getQuantity())
+                    .unitPrice(productEntryDto.getUnitPrice())
+                    .totalAmount(productEntryDto.getTotalAmount())
+                    .entryDate(LocalDateTime.now())
+                    .measurementUnit(productEntryDto.getMeasurementUnit())
+                    .build();
+            productEntryRepository.save(productEntry);
 
-        ApiResponse<ProductEntry> response = new ApiResponse<>(
-                productEntryRepository.save(productEntry),
-                "New product entry registered succesfully",
+        }
+
+        ApiResponse<List<ProductEntryDto>> response = new ApiResponse<>(
+                entryDto.getProductEntryList(),
+                "New product entries registered succesfully",
                 HttpStatus.OK
         );
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

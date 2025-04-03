@@ -27,7 +27,7 @@ public class Stock {
    private double unitPrice;
    @Column(columnDefinition = "DECIMAL(10, 2) DEFAULT 00.00")
    private double totalAmount;
-   private Integer suplierId;
+   private Integer supplierId;
 
 
     @PrePersist
