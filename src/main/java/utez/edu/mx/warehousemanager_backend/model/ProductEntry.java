@@ -35,7 +35,7 @@ public class ProductEntry {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "suplierId", nullable = false)
-    private Suplier suplier;
+    private Supplier supplier;
 
     private Integer relatedUserId;
 

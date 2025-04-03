@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.Suplier.SuplierDto;
-import utez.edu.mx.warehousemanager_backend.model.Suplier;
+import utez.edu.mx.warehousemanager_backend.model.Supplier;
 import utez.edu.mx.warehousemanager_backend.repository.SuplierRepository;
 import java.util.List;
 
@@ -18,37 +18,37 @@ public class SuplierService {
         this.suplierRepository = suplierRepository;
     }
 
-    public ResponseEntity<ApiResponse<Suplier>> save(SuplierDto dto) {
+    public ResponseEntity<ApiResponse<Supplier>> save(SuplierDto dto) {
         int existingSupliersCount = suplierRepository.countCoincidencesByName(dto.getName().trim());
         if (existingSupliersCount > 0) {
-            ApiResponse<Suplier> response = new ApiResponse<>(
+            ApiResponse<Supplier> response = new ApiResponse<>(
                     "Suplier already exists",
                     HttpStatus.CONFLICT
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
-        Suplier suplier = Suplier.builder()
+        Supplier supplier = Supplier.builder()
                 .name(dto.getName().trim())
                 .email(dto.getEmail().trim())
                 .build();
-        ApiResponse<Suplier> response = new ApiResponse<>(
-                suplierRepository.save(suplier),
+        ApiResponse<Supplier> response = new ApiResponse<>(
+                suplierRepository.save(supplier),
                 "Suplier created",
                 HttpStatus.OK
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<ApiResponse<List<Suplier>>> findAll() {
+    public ResponseEntity<ApiResponse<List<Supplier>>> findAll() {
         if (suplierRepository.findAll().isEmpty()) {
-            ApiResponse<List<Suplier>> response = new ApiResponse<>(
+            ApiResponse<List<Supplier>> response = new ApiResponse<>(
                     "No supliers registred",
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } else {
-            ApiResponse<List<Suplier>> response = new ApiResponse<>(
+            ApiResponse<List<Supplier>> response = new ApiResponse<>(
                     suplierRepository.findAll(),
                     "All supliers list",
                     HttpStatus.OK
@@ -57,16 +57,16 @@ public class SuplierService {
         }
     }
 
-    public ResponseEntity<ApiResponse<Suplier>> findByUuid(String uuid) {
+    public ResponseEntity<ApiResponse<Supplier>> findByUuid(String uuid) {
         if (suplierRepository.findByUuid(uuid) != null) {
-            ApiResponse<Suplier> response = new ApiResponse<>(
+            ApiResponse<Supplier> response = new ApiResponse<>(
                     suplierRepository.findByUuid(uuid),
                     "Suplier found",
                     HttpStatus.OK
             );
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            ApiResponse<Suplier> response = new ApiResponse<>(
+            ApiResponse<Supplier> response = new ApiResponse<>(
                     "Suplier not found",
                     HttpStatus.NOT_FOUND
             );
@@ -76,9 +76,9 @@ public class SuplierService {
 
 
     public ResponseEntity<ApiResponse<Void>> deleteByUuid(String uuid) {
-        Suplier suplier = suplierRepository.findByUuid(uuid);
-        if (suplier != null) {
-            suplierRepository.deleteById(suplier.getId());
+        Supplier supplier = suplierRepository.findByUuid(uuid);
+        if (supplier != null) {
+            suplierRepository.deleteById(supplier.getId());
             ApiResponse<Void> response = new ApiResponse<>(
                     "Suplier deleted",
                     HttpStatus.OK

@@ -28,7 +28,7 @@ public class ProductEntryService {
     public ResponseEntity<ApiResponse<ProductEntry>> save(ProductEntryDto dto) {
         ProductEntry productEntry = ProductEntry.builder()
                 .productName(dto.getProductName())
-                .suplier(suplierRepository.findById(dto.getSuplierId()).orElse(null))
+                .supplier(suplierRepository.findById(dto.getSuplierId()).orElse(null))
                 .category(categoryRepository.findById(dto.getCategoryId()).orElse(null))
                 .quantity(dto.getQuantity())
                 .unitPrice(dto.getUnitPrice())
