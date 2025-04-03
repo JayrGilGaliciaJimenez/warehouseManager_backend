@@ -45,9 +45,9 @@ public class DatabaseInitializer implements CommandLineRunner {
                       AND measurementUnit = NEW.measurementUnit;
                     ELSE
                         -- If the product does not exist, insert a new record with totalAmount
-                        INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, suplierId)
+                        INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, supplierId)
                         VALUES (NEW.id, NEW.productName, NEW.measurementUnit, NEW.quantity, NEW.unitPrice,
-                                NEW.quantity * NEW.unitPrice, NEW.suplierId);
+                                NEW.quantity * NEW.unitPrice, NEW.supplierId);
                 END IF;
                 END;
                 """;

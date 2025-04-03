@@ -8,7 +8,7 @@ import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.ProductEntry
 import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
-import utez.edu.mx.warehousemanager_backend.repository.SuplierRepository;
+import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,18 +17,18 @@ import java.util.List;
 public class ProductEntryService {
     private final ProductEntryRepository productEntryRepository;
     private final CategoryRepository categoryRepository;
-    private final SuplierRepository suplierRepository;
+    private final SupplierRepository supplierRepository;
 
-    public ProductEntryService(ProductEntryRepository productEntryRepository, CategoryRepository categoryRepository, SuplierRepository suplierRepository) {
+    public ProductEntryService(ProductEntryRepository productEntryRepository, CategoryRepository categoryRepository, SupplierRepository supplierRepository) {
         this.productEntryRepository = productEntryRepository;
         this.categoryRepository = categoryRepository;
-        this.suplierRepository = suplierRepository;
+        this.supplierRepository = supplierRepository;
     }
 
     public ResponseEntity<ApiResponse<ProductEntry>> save(ProductEntryDto dto) {
         ProductEntry productEntry = ProductEntry.builder()
                 .productName(dto.getProductName())
-                .supplier(suplierRepository.findById(dto.getSuplierId()).orElse(null))
+                .supplier(supplierRepository.findById(dto.getSuplierId()).orElse(null))
                 .category(categoryRepository.findById(dto.getCategoryId()).orElse(null))
                 .quantity(dto.getQuantity())
                 .unitPrice(dto.getUnitPrice())
