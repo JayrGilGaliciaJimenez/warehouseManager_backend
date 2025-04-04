@@ -66,8 +66,10 @@ public class UserController {
                 return Utilities.generateResponse(HttpStatus.BAD_REQUEST, "Email already registered");
             }
 
-            log.info("Encoding password for user with email: {}", request.getEmail());
-            request.setPassword(passwordEncoder.encode(request.getPassword()));
+            String temporaryPassword = UUID.randomUUID().toString();
+            log.info("Generated temporary password for user with email: {} (password not logged for security reasons)",
+                    request.getEmail());
+            request.setPassword(passwordEncoder.encode(temporaryPassword));
             request.setStatus("Pending");
 
             log.info("Saving user with email: {}", request.getEmail());
