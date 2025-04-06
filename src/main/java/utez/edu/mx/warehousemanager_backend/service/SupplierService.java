@@ -31,6 +31,7 @@ public class SupplierService {
         Supplier supplier = Supplier.builder()
                 .name(dto.getName().trim())
                 .email(dto.getEmail().trim())
+                .relatedUserId(dto.getRelatedUserId())
                 .build();
         ApiResponse<Supplier> response = new ApiResponse<>(
                 supplierRepository.save(supplier),
