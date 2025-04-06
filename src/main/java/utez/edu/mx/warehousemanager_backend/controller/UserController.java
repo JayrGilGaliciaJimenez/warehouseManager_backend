@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import utez.edu.mx.warehousemanager_backend.dto.UserDto;
 import utez.edu.mx.warehousemanager_backend.model.EmailModel;
 import utez.edu.mx.warehousemanager_backend.model.ResetTokenModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
@@ -43,9 +45,8 @@ public class UserController {
 
     // GetAll
     @GetMapping("/user/list")
-    public List<UserModel> users() {
-        log.info("Fetching all users");
-        return this.userService.getAll();
+    public List<UserDto> listUsers() {
+        return userService.getAllUsersDto();
     }
 
     // GetByUUID
