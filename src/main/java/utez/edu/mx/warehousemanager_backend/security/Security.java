@@ -60,7 +60,7 @@ public class Security {
                 .requestMatchers("/api/auth/activate-account/**").permitAll()
                 .requestMatchers("/api/user").hasRole(ADMIN)
                 .requestMatchers("/api/category").hasRole(USER)
-                .requestMatchers("/api/suplier").hasAnyRole(USER, ADMIN)
+                .requestMatchers("/api/supplier").hasAnyRole(USER, ADMIN)
                 .requestMatchers("/api/productEntry").hasAnyRole(USER, ADMIN)
                 .requestMatchers("/api/stock").hasRole(USER)
                 .requestMatchers("/api/productOut").hasAnyRole(USER, ADMIN)
