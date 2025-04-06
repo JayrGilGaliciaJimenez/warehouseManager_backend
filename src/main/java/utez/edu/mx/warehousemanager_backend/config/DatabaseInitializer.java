@@ -86,11 +86,204 @@ public class DatabaseInitializer implements CommandLineRunner {
                 END;
                 """;
 
+        String[] transactionLogTriggers = {
+                """
+                CREATE TRIGGER IF NOT EXISTS after_suppliers_insert
+                    AFTER INSERT
+                    ON suppliers
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM suppliers ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('INSERT', 'suppliers', var_relatedUserId, CONCAT('Inserted supplier with id: ', NEW.id), UUID());
+                
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_suppliers_update
+                    AFTER UPDATE
+                    ON suppliers
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM suppliers ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('UPDATE', 'suppliers', var_relatedUserId, CONCAT('Updated supplier with id: ', NEW.id), UUID());
+                
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_suppliers_delete
+                    AFTER DELETE
+                    ON suppliers
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM suppliers ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('DELETE', 'suppliers', var_relatedUserId, CONCAT('Deleted supplier with name: ', OLD.name), UUID());
+                
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_categories_insert
+                    AFTER INSERT
+                    ON categories
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM categories ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('INSERT', 'categories', var_relatedUserId, CONCAT('Inserted category with id: ', NEW.id), UUID());
+                
+                END;
+                """,
+
+                """
+                CREATE TRIGGER IF NOT EXISTS after_categories_update
+                    AFTER UPDATE
+                    ON categories
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                
+                    SELECT relatedUserId INTO var_relatedUserId FROM categories ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('UPDATE', 'categories', var_relatedUserId, CONCAT('Updated category with id: ', NEW.id), UUID());
+                
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_categories_delete
+                    AFTER DELETE
+                    ON categories
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM categories ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('DELETE', 'categories', var_relatedUserId, CONCAT('Deleted category with name: ', OLD.name), UUID());
+                
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_entries_insert
+                    AFTER INSERT
+                    ON product_entries
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_entries ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('INSERT', 'product_entries', var_relatedUserId, CONCAT('Inserted product entry with id: ', NEW.id), UUID());
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_entries_update
+                    AFTER UPDATE
+                    ON product_entries
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_entries ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('UPDATE', 'product_entries', var_relatedUserId, CONCAT('Updated product entry with id: ', NEW.id), UUID());
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_entries_delete
+                    AFTER DELETE
+                    ON product_entries
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_entries ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('DELETE', 'product_entries', var_relatedUserId,
+                            CONCAT('Deleted product entry with name: ', OLD.productName), UUID());
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_outs_insert
+                    AFTER INSERT
+                    ON product_outs
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('INSERT', 'product_outs', var_relatedUserId, CONCAT('Inserted product out with id: ', NEW.id), UUID());
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_outs_insert
+                    AFTER INSERT
+                    ON product_outs
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('INSERT', 'product_outs', var_relatedUserId, CONCAT('Inserted product out with id: ', NEW.id), UUID());
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_outs_update
+                    AFTER UPDATE
+                    ON product_outs
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('UPDATE', 'product_outs', var_relatedUserId, CONCAT('Updated product out with id: ', NEW.id), UUID());
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_outs_update
+                    AFTER UPDATE
+                    ON product_outs
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('UPDATE', 'product_outs', var_relatedUserId, CONCAT('Updated product out with id: ', NEW.id), UUID());
+                END;
+                """,
+                """
+                CREATE TRIGGER IF NOT EXISTS after_product_outs_delete
+                    AFTER DELETE
+                    ON product_outs
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE var_relatedUserId INT;
+                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
+                
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
+                    VALUES ('DELETE', 'product_outs', var_relatedUserId, CONCAT('Deleted product out with name: ', OLD.productName), UUID());
+                END;
+                """
+        };
+
         try {
             jdbcTemplate.execute(createProductEntriesToStockTrigger);
             logger.info("Trigger 'product_entries_to_stock' created successfully.");
         } catch (Exception e) {
-            
             logger.error("Error creating trigger 'product_entries_to_stock': ", e);
         }
 
@@ -98,10 +291,20 @@ public class DatabaseInitializer implements CommandLineRunner {
             jdbcTemplate.execute(createProductOutsToStockTrigger);
             logger.info("Trigger 'product_outs_to_stock' created successfully.");
         } catch (Exception e) {
-
             logger.error("Error creating trigger 'product_outs_to_stock': ", e);
         }
+
+        int counter = 1;
+        for (String createTransactionLogTrigger : transactionLogTriggers) {
+            try {
+                jdbcTemplate.execute(createTransactionLogTrigger);
+                logger.info("{}/{} Transaction log trigger created successfully", counter, transactionLogTriggers.length);
+            } catch (Exception e) {
+                logger.error("Error creating transaction log triggers: ", e);
+            }
+            counter++;
+        }
+
+
     }
-
-
 }
