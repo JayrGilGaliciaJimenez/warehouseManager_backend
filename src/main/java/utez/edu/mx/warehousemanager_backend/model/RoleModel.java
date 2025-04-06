@@ -20,7 +20,6 @@ public class RoleModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String uuid;
     @Column(name = "creation_date", nullable = false, updatable = false)
     private LocalDateTime creationDate;
     private String name;
