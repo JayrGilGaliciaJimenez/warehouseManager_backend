@@ -33,4 +33,15 @@ public class UserMapper {
                 user.getStatus(),
                 toRoleDto(user.getRole()));
     }
+
+    public static RoleModel toRoleModel(RoleDto roleDto) {
+        if (roleDto == null) {
+            return null;
+        }
+
+        RoleModel roleModel = new RoleModel();
+        roleModel.setId(roleDto.getId());
+        roleModel.setName(roleDto.getName());
+        return roleModel;
+    }
 }
