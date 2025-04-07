@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.persistence.EntityNotFoundException;
 import utez.edu.mx.warehousemanager_backend.dto.UserDto;
+import utez.edu.mx.warehousemanager_backend.mapper.UserMapper;
 import utez.edu.mx.warehousemanager_backend.model.EmailModel;
 import utez.edu.mx.warehousemanager_backend.model.ResetTokenModel;
+import utez.edu.mx.warehousemanager_backend.model.RoleModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
 import utez.edu.mx.warehousemanager_backend.repository.IPasswordResetToken;
 import utez.edu.mx.warehousemanager_backend.service.EmailService;
@@ -113,6 +116,39 @@ public class UserController {
                 return Utilities.generateResponse(HttpStatus.OK, "User deactivated successfully");
             }
         } catch (Exception e) {
+            return Utilities.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Update User
+    @PutMapping("/user/update/{uuid}")
+    public ResponseEntity<Object> updateUser(@PathVariable("uuid") UUID uuid, @RequestBody UserDto request) {
+        try {
+            UserModel user = this.getByUuid(uuid);
+            if (user == null) {
+                log.warn(LOG_RECORD_NOT_FOUND, uuid);
+                return Utilities.generateResponse(HttpStatus.BAD_REQUEST, RECORD_NOT_FOUND);
+            }
+
+            if (request.getName() != null && !request.getName().isEmpty()) {
+                user.setName(request.getName());
+            }
+            if (request.getLastname() != null && !request.getLastname().isEmpty()) {
+                user.setLastname(request.getLastname());
+            }
+            if (request.getRole() != null) {
+                RoleModel roleModel = UserMapper.toRoleModel(request.getRole());
+                user.setRole(roleModel);
+            }
+
+            this.userService.save(user);
+            log.info("User updated successfully with UUID: {}", uuid);
+            return Utilities.generateResponse(HttpStatus.OK, "User updated successfully");
+        } catch (EntityNotFoundException e) {
+            log.error(LOG_RECORD_NOT_FOUND, uuid, e);
+            return Utilities.generateResponse(HttpStatus.NOT_FOUND, RECORD_NOT_FOUND);
+        } catch (Exception e) {
+            log.error("Error occurred while updating user with UUID: {}", uuid, e);
             return Utilities.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR);
         }
     }
