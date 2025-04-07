@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import utez.edu.mx.warehousemanager_backend.dto.UserDto;
+import utez.edu.mx.warehousemanager_backend.mapper.UserMapper;
 import utez.edu.mx.warehousemanager_backend.model.ResetTokenModel;
 import utez.edu.mx.warehousemanager_backend.model.UserModel;
 import utez.edu.mx.warehousemanager_backend.repository.IPasswordResetToken;
@@ -28,8 +30,11 @@ public class UserService {
         this.passwordRepository = passwordRepository;
     }
 
-    public List<UserModel> getAll() {
-        return this.userRepository.findAll(Sort.by("id").descending());
+    public List<UserDto> getAllUsersDto() {
+        return userRepository.findAll(Sort.by("id").descending())
+                .stream()
+                .map(UserMapper::toUserDto)
+                .toList();
     }
 
     public UserModel findByUuid(UUID uuid) {
