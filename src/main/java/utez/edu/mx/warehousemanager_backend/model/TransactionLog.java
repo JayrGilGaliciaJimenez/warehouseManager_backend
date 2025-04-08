@@ -20,22 +20,14 @@ public class TransactionLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
+    @Column(name = "uuid", nullable = false, columnDefinition = "CHAR(36)")
     private UUID uuid;
-
     private String transactionType;
     private String tableName;
     private Integer relatedUserId;
     private String details;
-    private LocalDateTime transactionDate = LocalDateTime.now();
-
-
-    @PrePersist
-    public void generateUUID() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-    }
-
+    @Column(name = "transactionDate", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime transactionDate;
 
 
 }

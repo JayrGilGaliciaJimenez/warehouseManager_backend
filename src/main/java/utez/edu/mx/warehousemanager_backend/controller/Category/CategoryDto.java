@@ -9,4 +9,6 @@ import java.io.Serializable;
 @Value
 public class CategoryDto implements Serializable {
     String name;
+    Integer relatedUserId;
+
 }
