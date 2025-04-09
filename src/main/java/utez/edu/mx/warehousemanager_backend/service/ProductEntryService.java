@@ -32,6 +32,7 @@ public class ProductEntryService {
             if (validationError != null) {
                 ApiResponse<List<ProductEntryDto>> response = new ApiResponse<>(
                         validationError,
+                        "E-01", // invalid input data
                         HttpStatus.CONFLICT
                 );
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -103,6 +104,7 @@ public class ProductEntryService {
         } else {
             ApiResponse<ProductEntry> response = new ApiResponse<>(
                     "Product entry not found",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -121,6 +123,7 @@ public class ProductEntryService {
         }
         ApiResponse<String> response = new ApiResponse<>(
                 "Product entry not found",
+                "E-02", // not found
                 HttpStatus.NOT_FOUND
         );
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
