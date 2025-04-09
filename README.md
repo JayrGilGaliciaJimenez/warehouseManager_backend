@@ -16,6 +16,7 @@ The project includes the following dependencies:
 - **Lombok** – To reduce verbose code.
 - **Spring Boot DevTools** – For development enhancements.
 - **Spring Data JPA** – For database interactions.
+- **Hibernate Validator** - For fields validations.
 
 ## Getting Started
 ### Prerequisites

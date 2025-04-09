@@ -8,7 +8,7 @@ import utez.edu.mx.warehousemanager_backend.controller.Supplier.SupplierDto;
 import utez.edu.mx.warehousemanager_backend.model.Supplier;
 import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
 import java.util.List;
-
+import java.util.regex.Pattern;
 
 @Service
 public class SupplierService {
@@ -18,27 +18,40 @@ public class SupplierService {
         this.supplierRepository = supplierRepository;
     }
 
-    public ResponseEntity<ApiResponse<Supplier>> save(SupplierDto dto) {
-        int existingSuppliersCount = supplierRepository.countCoincidencesByName(dto.getName().trim());
-        if (existingSuppliersCount > 0) {
+    public ResponseEntity<ApiResponse<Supplier>> save(SupplierDto supplierDto) {
+        if (!isValidEmail(supplierDto.getEmail())) {
             ApiResponse<Supplier> response = new ApiResponse<>(
-                    "Supplier already exists",
+                    "Invalid email format.",
+                    HttpStatus.BAD_REQUEST
+            );
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        if (supplierRepository.existsByEmail(supplierDto.getEmail())) {
+            ApiResponse<Supplier> response = new ApiResponse<>(
+                    "A supplier with this email already exists.",
                     HttpStatus.CONFLICT
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-
         Supplier supplier = Supplier.builder()
-                .name(dto.getName().trim())
-                .email(dto.getEmail().trim())
-                .relatedUserId(dto.getRelatedUserId())
+                .name(supplierDto.getName())
+                .email(supplierDto.getEmail())
                 .build();
+
+        supplierRepository.save(supplier);
         ApiResponse<Supplier> response = new ApiResponse<>(
-                supplierRepository.save(supplier),
-                "Supplier created",
+                supplier,
+                "Supplier saved successfully.",
                 HttpStatus.OK
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
     }
 
     public ResponseEntity<ApiResponse<List<Supplier>>> findAll() {
@@ -74,7 +87,6 @@ public class SupplierService {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-
 
     public ResponseEntity<ApiResponse<Void>> deleteByUuid(String uuid) {
         Supplier supplier = supplierRepository.findByUuid(uuid);

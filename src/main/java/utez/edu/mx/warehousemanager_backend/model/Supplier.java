@@ -2,6 +2,7 @@ package utez.edu.mx.warehousemanager_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public class Supplier {
     private Integer id;
     private UUID uuid;
     private String name;
+    @Column(nullable = false, unique = true)
+    @Email(message = "Invalid email format")
     private String email;
     private LocalDateTime creationDate = LocalDateTime.now();
     private Integer relatedUserId;
