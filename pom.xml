@@ -121,6 +121,12 @@
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
         <!-- Logs -->
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.2.Final</version>
+        </dependency>
     </dependencies>
 
     <build>
