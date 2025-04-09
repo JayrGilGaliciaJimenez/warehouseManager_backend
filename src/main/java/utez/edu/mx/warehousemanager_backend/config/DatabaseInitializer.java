@@ -45,9 +45,9 @@ public class DatabaseInitializer implements CommandLineRunner {
                       AND measurementUnit = NEW.measurementUnit;
                     ELSE
                         -- If the product does not exist, insert a new record with totalAmount
-                        INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, supplierId)
+                        INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, supplierId, operationId)
                         VALUES (NEW.id, NEW.productName, NEW.measurementUnit, NEW.quantity, NEW.unitPrice,
-                                NEW.quantity * NEW.unitPrice, NEW.supplierId);
+                                NEW.quantity * NEW.unitPrice, NEW.supplierId, NEW.operationId);
                 END IF;
                 END;
                 """;
@@ -87,6 +87,37 @@ public class DatabaseInitializer implements CommandLineRunner {
                 """;
 
         String[] transactionLogTriggers = {
+                """
+                CREATE TRIGGER IF NOT EXISTS after_delete_product_entry
+                    AFTER DELETE
+                    ON product_entries
+                    FOR EACH ROW
+                BEGIN
+                    DECLARE remaining_quantity INT;
+                
+                    -- Check the current quantity in the stock table
+                    SELECT quantity
+                    INTO remaining_quantity
+                    FROM stock
+                    WHERE productName = OLD.productName
+                      AND measurementUnit = OLD.measurementUnit;
+                
+                    IF remaining_quantity IS NOT NULL THEN
+                        -- Subtract the deleted product entry's quantity from the stock
+                        UPDATE stock
+                        SET quantity = quantity - OLD.quantity,
+                            totalAmount = (quantity - OLD.quantity) * unitPrice
+                        WHERE productName = OLD.productName
+                          AND measurementUnit = OLD.measurementUnit;
+                
+                        -- If the resulting quantity is zero or less, delete the stock entry
+                        DELETE FROM stock
+                        WHERE productName = OLD.productName
+                          AND measurementUnit = OLD.measurementUnit
+                          AND quantity <= 0;
+                    END IF;
+                END;
+                """,
                 """
                 CREATE TRIGGER IF NOT EXISTS after_suppliers_insert
                     AFTER INSERT
