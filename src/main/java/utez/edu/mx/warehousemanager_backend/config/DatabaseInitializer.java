@@ -5,17 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import utez.edu.mx.warehousemanager_backend.service.ProductOutService;
-
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
     private final JdbcTemplate jdbcTemplate;
-    private final ProductOutService productOutService;
 
-    public DatabaseInitializer(JdbcTemplate jdbcTemplate, ProductOutService productOutService) {
+    public DatabaseInitializer(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.productOutService = productOutService;
     }
 
     @Override
