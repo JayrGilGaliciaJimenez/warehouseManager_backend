@@ -28,6 +28,7 @@ public class StockService {
         } else {
             ApiResponse<Stock> response = new ApiResponse<>(
                     "Stock not found",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
