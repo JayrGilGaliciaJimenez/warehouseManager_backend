@@ -34,7 +34,7 @@ public class ProductEntryService {
                     .category(categoryRepository.findById(productEntryDto.getCategoryId()).orElse(null))
                     .quantity(productEntryDto.getQuantity())
                     .unitPrice(productEntryDto.getUnitPrice())
-                    .totalAmount(productEntryDto.getTotalAmount())
+                    .totalAmount(productEntryDto.getQuantity() * productEntryDto.getUnitPrice())
                     .entryDate(LocalDateTime.now())
                     .measurementUnit(productEntryDto.getMeasurementUnit())
                     .build();
