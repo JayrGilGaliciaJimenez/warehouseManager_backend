@@ -26,6 +26,7 @@ public class CategoryService {
         if (existingCategoriesCount > 0) {
             ApiResponse<Category> response = new ApiResponse<>(
                     "Category already exists",
+                    "E-01", // duplicate resource
                     HttpStatus.CONFLICT
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -65,6 +66,7 @@ public class CategoryService {
         } else {
             ApiResponse<Category> response = new ApiResponse<>(
                     "Category not found",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -83,6 +85,7 @@ public class CategoryService {
         } else {
             ApiResponse<Void> response = new ApiResponse<>(
                     "Category not found",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
