@@ -10,7 +10,6 @@ import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -89,6 +88,24 @@ public class ProductEntryService {
 
         } else {
             ApiResponse<Void> response = new ApiResponse<>(
+                    "Product entry not found",
+                    HttpStatus.NOT_FOUND
+            );
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<ApiResponse<String>> deleteById(Integer id){
+        ProductEntry productEntry =  productEntryRepository.findById(id).orElse(null);
+        if(productEntry != null) {
+            productEntryRepository.deleteById(id);
+            ApiResponse<String> response = new ApiResponse<>(
+                    "Product entry deleted",
+                    HttpStatus.OK
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            ApiResponse<String> response = new ApiResponse<>(
                     "Product entry not found",
                     HttpStatus.NOT_FOUND
             );
