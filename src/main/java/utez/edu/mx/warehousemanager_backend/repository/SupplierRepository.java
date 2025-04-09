@@ -12,5 +12,6 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
     @Query(value = "SELECT COUNT(s) FROM Supplier s WHERE s.name LIKE %:name%")
     int countCoincidencesByName(String name);
 
+    boolean existsByEmail(String email);
 
 }
