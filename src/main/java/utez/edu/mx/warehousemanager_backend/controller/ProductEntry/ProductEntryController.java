@@ -7,6 +7,7 @@ import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.service.ProductEntryService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/productEntry")
@@ -28,13 +29,13 @@ public class ProductEntryController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<ProductEntry>> findByUuid(@PathVariable String uuid){
+    public ResponseEntity<ApiResponse<ProductEntry>> findByUuid(@PathVariable UUID uuid){
         return productEntryService.findByUuid(uuid);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteById(@PathVariable Integer id){
-        return productEntryService.deleteById(id);
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<ApiResponse<String>> deleteById(@PathVariable UUID uuid){
+        return productEntryService.deleteByUuid(uuid);
     }
 
 
