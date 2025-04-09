@@ -3,7 +3,6 @@ package utez.edu.mx.warehousemanager_backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -33,7 +32,7 @@ public class ProductEntry {
     private double totalAmount;
     private LocalDateTime entryDate = LocalDateTime.now();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "supplierId", nullable = false)
     private Supplier supplier;
 
