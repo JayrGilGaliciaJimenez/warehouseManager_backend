@@ -27,7 +27,16 @@ public class ProductEntryService {
     }
 
     public ResponseEntity<ApiResponse<List<ProductEntryDto>>> save(EntryDto entryDto) {
-        for(ProductEntryDto productEntryDto : entryDto.getProductEntryList()){
+        for (ProductEntryDto productEntryDto : entryDto.getProductEntryList()) {
+            String validationError = validateProductEntry(productEntryDto);
+            if (validationError != null) {
+                ApiResponse<List<ProductEntryDto>> response = new ApiResponse<>(
+                        validationError,
+                        HttpStatus.CONFLICT
+                );
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+
             ProductEntry productEntry = ProductEntry.builder()
                     .productName(productEntryDto.getProductName())
                     .supplier(supplierRepository.findById(productEntryDto.getSupplierId()).orElse(null))
@@ -39,16 +48,38 @@ public class ProductEntryService {
                     .measurementUnit(productEntryDto.getMeasurementUnit())
                     .build();
             productEntryRepository.save(productEntry);
-
         }
 
         ApiResponse<List<ProductEntryDto>> response = new ApiResponse<>(
                 entryDto.getProductEntryList(),
-                "New product entries registered succesfully",
+                "New product entries registered successfully",
                 HttpStatus.OK
         );
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    private String validateProductEntry(ProductEntryDto productEntryDto) {
+        if (productEntryDto.getProductName() == null || productEntryDto.getProductName().isBlank()) {
+            return "Product name cannot be empty or blank.";
+        }
+        if (productEntryDto.getMeasurementUnit() == null || productEntryDto.getMeasurementUnit().isBlank()) {
+            return "Measurement unit cannot be empty or blank.";
+        }
+        if (productEntryDto.getQuantity() <= 0) {
+            return "Quantity must be greater than zero.";
+        }
+        if (productEntryDto.getUnitPrice() <= 0) {
+            return "Unit price must be greater than zero.";
+        }
+        if (productEntryDto.getSupplierId() == null) {
+            return "Supplier ID cannot be null.";
+        }
+        if (productEntryDto.getCategoryId() == null) {
+            return "Category ID cannot be null.";
+        }
+        return null;
     }
 
     public ResponseEntity<ApiResponse<List<ProductEntry>>> findAll(){
