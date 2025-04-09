@@ -49,6 +49,7 @@ public class ProductOutService {
         }else{
             ApiResponse<ProductOut> response = new ApiResponse<>(
                     "Product out not found",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
