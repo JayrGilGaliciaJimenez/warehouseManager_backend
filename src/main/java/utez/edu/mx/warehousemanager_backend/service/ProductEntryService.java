@@ -12,6 +12,7 @@ import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductEntryService {
@@ -59,7 +60,7 @@ public class ProductEntryService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<ApiResponse<ProductEntry>> findByUuid(String uuid){
+    public ResponseEntity<ApiResponse<ProductEntry>> findByUuid(UUID uuid){
         if(productEntryRepository.findByUuid(uuid) != null){
             ApiResponse<ProductEntry> response = new ApiResponse<>(
                     productEntryRepository.findByUuid(uuid),
@@ -77,40 +78,20 @@ public class ProductEntryService {
         }
     }
 
-    public ResponseEntity<ApiResponse<Void>> deleteByUuid(String uuid) {
-        ProductEntry productEntry =  productEntryRepository.findByUuid(uuid);
-        if(productEntry != null) {
-            ApiResponse<Void> response = new ApiResponse<>(
-                    "Product entry deleted",
-                    HttpStatus.OK
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } else {
-            ApiResponse<Void> response = new ApiResponse<>(
-                    "Product entry not found",
-                    HttpStatus.NOT_FOUND
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
-
-    public ResponseEntity<ApiResponse<String>> deleteById(Integer id){
-        ProductEntry productEntry =  productEntryRepository.findById(id).orElse(null);
-        if(productEntry != null) {
-            productEntryRepository.deleteById(id);
+    public ResponseEntity<ApiResponse<String>> deleteByUuid(UUID uuid){
+        ProductEntry productEntry = productEntryRepository.findByUuid(uuid);
+        if (productEntry != null){
+            productEntryRepository.delete(productEntry);
             ApiResponse<String> response = new ApiResponse<>(
                     "Product entry deleted",
                     HttpStatus.OK
             );
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            ApiResponse<String> response = new ApiResponse<>(
-                    "Product entry not found",
-                    HttpStatus.NOT_FOUND
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+        ApiResponse<String> response = new ApiResponse<>(
+                "Product entry not found",
+                HttpStatus.NOT_FOUND
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-
 }
