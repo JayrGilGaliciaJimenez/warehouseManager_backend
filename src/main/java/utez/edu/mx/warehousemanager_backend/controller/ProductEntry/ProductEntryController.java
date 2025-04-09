@@ -32,9 +32,9 @@ public class ProductEntryController {
         return productEntryService.findByUuid(uuid);
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<ApiResponse<Void>> deleteByUuid(@PathVariable String  uuid){
-        return productEntryService.deleteByUuid(uuid);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteById(@PathVariable Integer id){
+        return productEntryService.deleteById(id);
     }
 
 
