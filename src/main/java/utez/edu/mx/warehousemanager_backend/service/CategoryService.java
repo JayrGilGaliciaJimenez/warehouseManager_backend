@@ -9,11 +9,11 @@ import utez.edu.mx.warehousemanager_backend.model.Category;
 import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.UUID;
 
 
 @Service
-public class CategoryService {
+public class    CategoryService {
     private final CategoryRepository categoryRepository;
 
     public CategoryService(CategoryRepository categoryRepository) {
@@ -54,39 +54,36 @@ public class CategoryService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<ApiResponse<Category>> findByUuid(String uuid){
-        if(categoryRepository.findByUuid(uuid) != null){
-            ApiResponse<Category> response = new ApiResponse<>(
-                    categoryRepository.findByUuid(uuid),
-                    "Category found",
-                    HttpStatus.OK
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<Category>> findByUuid(String uuid) {
+        UUID realUuid;
+        try {
+            realUuid = UUID.fromString(uuid);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ApiResponse<>("UUID inválido", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        }
+
+        Category category = categoryRepository.findByUuid(realUuid);
+        if (category != null) {
+            return new ResponseEntity<>(new ApiResponse<>(category, "Category found", HttpStatus.OK), HttpStatus.OK);
         } else {
-            ApiResponse<Category> response = new ApiResponse<>(
-                    "Category not found",
-                    HttpStatus.NOT_FOUND
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse<>("Category not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
     }
 
-    public ResponseEntity<ApiResponse<Void>> deleteByUuid(String  uuid) {
-        Category category = categoryRepository.findByUuid(uuid);
-        if(category != null) {
+    public ResponseEntity<ApiResponse<Void>> deleteByUuid(String uuid) {
+        UUID realUuid;
+        try {
+            realUuid = UUID.fromString(uuid);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ApiResponse<>("UUID inválido", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        }
+
+        Category category = categoryRepository.findByUuid(realUuid);
+        if (category != null) {
             categoryRepository.deleteById(category.getId());
-            ApiResponse<Void> response = new ApiResponse<>(
-                    "Category deleted",
-                    HttpStatus.OK
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>("Category deleted", HttpStatus.OK), HttpStatus.OK);
         } else {
-            ApiResponse<Void> response = new ApiResponse<>(
-                    "Category not found",
-                    HttpStatus.NOT_FOUND
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse<>("Category not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
     }
-
 }
