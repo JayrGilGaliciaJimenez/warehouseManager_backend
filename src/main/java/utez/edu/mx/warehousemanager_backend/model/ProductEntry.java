@@ -36,7 +36,7 @@ public class ProductEntry {
     @JoinColumn(name = "supplierId", nullable = false)
     private Supplier supplier;
 
-    private Integer relatedUserId;
+    private UUID relatedUserUUID;
 
     @PrePersist
     public void generateUUID() {

@@ -201,17 +201,18 @@ public class DatabaseInitializer implements CommandLineRunner {
                 END;
                 """,
                 """
-                CREATE TRIGGER IF NOT EXISTS after_product_entries_insert
-                    AFTER INSERT
-                    ON product_entries
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_entries ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('INSERT', 'product_entries', var_relatedUserId, CONCAT('Inserted product entry with id: ', NEW.id), UUID());
-                END;
+               CREATE TRIGGER IF NOT EXISTS after_product_entries_insert
+                        AFTER INSERT
+                        ON product_entries
+                        FOR EACH ROW
+                    BEGIN
+                        DECLARE var_relatedUserUUID UUID;
+                        SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_entries ORDER BY id DESC LIMIT 1;
+                    
+                        INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                        VALUES ('INSERT', 'product_entries', var_relatedUserUUID, CONCAT('Inserted product entry with id: ', NEW.id), UUID());
+                    END;
+                    
                 """,
                 """
                 CREATE TRIGGER IF NOT EXISTS after_product_entries_update
