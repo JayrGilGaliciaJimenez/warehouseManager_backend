@@ -22,6 +22,7 @@ public class SupplierService {
         if (!isValidEmail(supplierDto.getEmail())) {
             ApiResponse<Supplier> response = new ApiResponse<>(
                     "Invalid email format.",
+                    "E-01", // invalid input data
                     HttpStatus.BAD_REQUEST
             );
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -30,6 +31,7 @@ public class SupplierService {
         if (supplierRepository.existsByEmail(supplierDto.getEmail())) {
             ApiResponse<Supplier> response = new ApiResponse<>(
                     "A supplier with this email already exists.",
+                    "E-03", // duplicate data
                     HttpStatus.CONFLICT
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -58,6 +60,7 @@ public class SupplierService {
         if (supplierRepository.findAll().isEmpty()) {
             ApiResponse<List<Supplier>> response = new ApiResponse<>(
                     "No suppliers registred",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -82,6 +85,7 @@ public class SupplierService {
         } else {
             ApiResponse<Supplier> response = new ApiResponse<>(
                     "Supplier not found",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -101,6 +105,7 @@ public class SupplierService {
 
             ApiResponse<Void> response = new ApiResponse<>(
                     "Suplier not found",
+                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
