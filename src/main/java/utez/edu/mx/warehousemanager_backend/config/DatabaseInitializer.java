@@ -18,35 +18,35 @@ public class DatabaseInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         String createProductEntriesToStockTrigger = """
-                 CREATE TRIGGER IF NOT EXISTS product_entries_to_stock
-                    AFTER INSERT
-                    ON product_entries
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE existing_quantity INT;
-                
-                    -- Check if the product already exists in the stock table
-                    SELECT quantity
-                    INTO existing_quantity
-                    FROM stock
-                    WHERE productName = NEW.productName
-                      AND measurementUnit = NEW.measurementUnit;
-                
-                    IF existing_quantity IS NOT NULL THEN
-                        -- If the product exists, update the quantity and totalAmount
-                    UPDATE stock
-                    SET quantity     = quantity + NEW.quantity,
-                        totalAmount = (quantity) * NEW.unitPrice
-                    WHERE productName = NEW.productName
-                      AND measurementUnit = NEW.measurementUnit;
-                    ELSE
-                        -- If the product does not exist, insert a new record with totalAmount
-                        INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, supplierId)
-                        VALUES (NEW.id, NEW.productName, NEW.measurementUnit, NEW.quantity, NEW.unitPrice,
-                                NEW.quantity * NEW.unitPrice, NEW.supplierId);
-                END IF;
-                END;
-                """;
+    CREATE TRIGGER IF NOT EXISTS product_entries_to_stock
+        AFTER INSERT
+        ON product_entries
+        FOR EACH ROW
+    BEGIN
+        DECLARE existing_quantity INT;
+
+        -- Check if the product already exists in the stock table
+        SELECT quantity
+        INTO existing_quantity
+        FROM stock
+        WHERE productName = NEW.productName
+          AND measurementUnit = NEW.measurementUnit;
+
+        IF existing_quantity IS NOT NULL THEN
+            -- If the product exists, update the quantity and totalAmount
+            UPDATE stock
+            SET quantity     = quantity + NEW.quantity,
+                totalAmount = (quantity + NEW.quantity) * NEW.unitPrice
+            WHERE productName = NEW.productName
+              AND measurementUnit = NEW.measurementUnit;
+        ELSE
+            -- If the product does not exist, insert a new record with uuid
+            INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, supplierId, uuid)
+            VALUES (NEW.id, NEW.productName, NEW.measurementUnit, NEW.quantity, NEW.unitPrice,
+                    NEW.quantity * NEW.unitPrice, NEW.supplierId, UUID());
+        END IF;
+    END;
+    """;
 
         String createProductOutsToStockTrigger = """
                 CREATE TRIGGER IF NOT EXISTS product_outs_to_stock
