@@ -17,7 +17,7 @@ public class ProductOutController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ApiResponse<ProductOut>> save(@RequestBody ProductOutDto dto){
+    public ResponseEntity<ApiResponse<List<ProductOutDto>>> save(@RequestBody OutDto dto){
         return productOutService.save(dto);
     }
 

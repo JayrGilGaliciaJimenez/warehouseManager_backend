@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
+import utez.edu.mx.warehousemanager_backend.controller.ProductOut.OutDto;
 import utez.edu.mx.warehousemanager_backend.controller.ProductOut.ProductOutDto;
 import utez.edu.mx.warehousemanager_backend.model.ProductOut;
 import utez.edu.mx.warehousemanager_backend.repository.ProductOutRepository;
@@ -19,23 +20,41 @@ public class ProductOutService {
         this.productOutRepository = productOutRepository;
     }
 
-    public ResponseEntity<ApiResponse<ProductOut>> save (ProductOutDto dto) {
-        ProductOut savedProductOut = ProductOut.builder()
-                .productName(dto.getProductName())
-                .unitPrice(dto.getUnitPrice())
-                .quantity(dto.getQuantity())
-                .totalAmount(dto.getTotalAmount())
-                .measurementUnit(dto.getMeasurementUnit())
-                .outDate(LocalDateTime.now())
-                .reciverName(dto.getReciverName())
-                .build();
+    public ResponseEntity<ApiResponse<List<ProductOutDto>>> save (OutDto outDto){
+        for (ProductOutDto productOutDto : outDto.getProductOutList()) {
+            String validationError = validateProductOut(productOutDto);
+            if (validationError != null) {
+                ApiResponse<List<ProductOutDto>> response = new ApiResponse<>(
+                        validationError,
+                        HttpStatus.CONFLICT
+                );
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
 
-        ApiResponse<ProductOut> response = new ApiResponse<>(
-                productOutRepository.save(savedProductOut),
-                "New product out created",
+            ProductOut productOut = ProductOut.builder()
+                    .productName(productOutDto.getProductName())
+                    .quantity(productOutDto.getQuantity())
+                    .unitPrice(productOutDto.getUnitPrice())
+                    .totalAmount(productOutDto.getQuantity() * productOutDto.getUnitPrice())
+                    .outDate(LocalDateTime.now())
+                    .measurementUnit(productOutDto.getMeasurementUnit())
+                    .receiverName(productOutDto.getReceiverName())
+                    .relatedUserUUID(productOutDto.getRelatedUserUUID())
+                    .build();
+            productOutRepository.save(productOut);
+        }
+
+        ApiResponse<List<ProductOutDto>> response = new ApiResponse<>(
+                outDto.getProductOutList(),
+                "New product outs registered successfully",
                 HttpStatus.OK
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private String validateProductOut(ProductOutDto productOutDto) {
+        // Implement validation logic here
+        return null;
     }
 
     public ResponseEntity<ApiResponse<ProductOut>> findByUuid(String uuid){
@@ -55,6 +74,7 @@ public class ProductOutService {
         }
 
     }
+
 
     public ResponseEntity<ApiResponse<List<ProductOut>>> findAll() {
         ApiResponse<List<ProductOut>> response = new ApiResponse<>(
