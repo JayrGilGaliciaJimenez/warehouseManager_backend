@@ -7,6 +7,7 @@ import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.Supplier.SupplierDto;
 import utez.edu.mx.warehousemanager_backend.model.Supplier;
 import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -30,12 +31,25 @@ public class SupplierService {
 
         if (supplierRepository.existsByEmail(supplierDto.getEmail())) {
             ApiResponse<Supplier> response = new ApiResponse<>(
-                    "A supplier with this email already exists.",
+                    "Ya existe un proveedor con ese email",
                     "E-03", // duplicate data
                     HttpStatus.CONFLICT
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
+
+        if (supplierRepository.existsByNameIsLike(supplierDto.getName())) {
+            ApiResponse<Supplier> response = new ApiResponse<>(
+                    "Ya existe un proveedor con ese nombre",
+                    "E-03", // duplicate data
+                    HttpStatus.CONFLICT
+            );
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+
+        }
+
+
         Supplier supplier = Supplier.builder()
                 .name(supplierDto.getName())
                 .email(supplierDto.getEmail())
