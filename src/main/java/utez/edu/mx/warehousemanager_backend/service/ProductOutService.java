@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.ProductOut.OutDto;
 import utez.edu.mx.warehousemanager_backend.controller.ProductOut.ProductOutDto;
+import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.model.ProductOut;
 import utez.edu.mx.warehousemanager_backend.repository.ProductOutRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductOutService {
@@ -85,5 +87,42 @@ public class ProductOutService {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
+
+    public ResponseEntity<ApiResponse<String>> deleteByUuid(UUID uuid){
+        ProductOut productOut = productOutRepository.findByUuid(uuid);
+        if (productOut != null){
+            productOutRepository.delete(productOut);
+            ApiResponse<String> response = new ApiResponse<>(
+                    "Product out deleted",
+                    HttpStatus.OK
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        ApiResponse<String> response = new ApiResponse<>(
+                "Product out not found",
+                HttpStatus.NOT_FOUND
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<ApiResponse<List<ProductOut>>> findByUser(UUID uuid) {
+        List<ProductOut> productOuts = productOutRepository.findAllByRelatedUserUUID(uuid);
+        if (!productOuts.isEmpty()) {
+            ApiResponse<List<ProductOut>> response = new ApiResponse<>(
+                    productOuts,
+                    "Product outs found for the related user",
+                    HttpStatus.OK
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            ApiResponse<List<ProductOut>> response = new ApiResponse<>(
+                    "No product outs found for the related user",
+                    HttpStatus.NOT_FOUND
+            );
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
 }

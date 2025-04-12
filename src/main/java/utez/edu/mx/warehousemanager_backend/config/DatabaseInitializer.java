@@ -271,11 +271,35 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON product_outs
                     FOR EACH ROW
                 BEGIN
+                    DECLARE var_relatedUserUUID UUID;
+                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_outs ORDER BY id DESC LIMIT 1;
                     INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
                     VALUES ('DELETE', 'product_outs', OLD.relatedUserUUID, CONCAT('Deleted product out with name: ', OLD.productName), UUID_TO_BIN(UUID()));
                 END;
                 """
         };
+
+        String createProductOutsDeleteTrigger =
+    """
+    CREATE TRIGGER IF NOT EXISTS after_delete_product_outs
+        AFTER DELETE
+        ON product_outs
+        FOR EACH ROW
+    BEGIN
+        UPDATE stock
+        SET quantity = quantity + OLD.quantity,
+            totalAmount = (quantity + OLD.quantity) * unitPrice
+        WHERE productName = OLD.productName
+          AND measurementUnit = OLD.measurementUnit;
+    END;
+""";
+
+        try {
+            jdbcTemplate.execute(createProductOutsDeleteTrigger);
+            logger.info("Trigger 'after_delete_product_outs' created successfully.");
+        } catch (Exception e) {
+            logger.error("Error creating trigger 'after_delete_product_outs': ", e);
+        }
 
         try {
             jdbcTemplate.execute(createProductEntriesToStockTrigger);
