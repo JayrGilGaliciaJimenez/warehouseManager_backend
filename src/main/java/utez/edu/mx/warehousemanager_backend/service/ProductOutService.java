@@ -54,11 +54,6 @@ public class ProductOutService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private String validateProductOut(ProductOutDto productOutDto) {
-        // Implement validation logic here
-        return null;
-    }
-
     public ResponseEntity<ApiResponse<ProductOut>> findByUuid(String uuid){
         if(productOutRepository.findByUuid(uuid) != null){
             ApiResponse<ProductOut> response = new ApiResponse<>(
