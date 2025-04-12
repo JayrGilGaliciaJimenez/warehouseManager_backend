@@ -47,6 +47,7 @@ public class ProductEntryService {
                     .totalAmount(productEntryDto.getQuantity() * productEntryDto.getUnitPrice())
                     .entryDate(LocalDateTime.now())
                     .measurementUnit(productEntryDto.getMeasurementUnit())
+                    .relatedUserUUID(productEntryDto.getRelatedUserUUID())
                     .build();
             productEntryRepository.save(productEntry);
         }
@@ -127,5 +128,23 @@ public class ProductEntryService {
                 HttpStatus.NOT_FOUND
         );
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<ApiResponse<List<ProductEntry>>> findByUser(UUID uuid) {
+        List<ProductEntry> productEntries = productEntryRepository.findAllByRelatedUserUUID(uuid);
+        if (!productEntries.isEmpty()) {
+            ApiResponse<List<ProductEntry>> response = new ApiResponse<>(
+                    productEntries,
+                    "Product entries found for the related user",
+                    HttpStatus.OK
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            ApiResponse<List<ProductEntry>> response = new ApiResponse<>(
+                    "No product entries found for the related user",
+                    HttpStatus.NOT_FOUND
+            );
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
     }
 }

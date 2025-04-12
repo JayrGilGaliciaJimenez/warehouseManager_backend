@@ -3,6 +3,7 @@ package utez.edu.mx.warehousemanager_backend.controller.ProductEntry;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * DTO for {@link utez.edu.mx.warehousemanager_backend.model.ProductEntry}
@@ -16,5 +17,6 @@ public class ProductEntryDto implements Serializable {
     double unitPrice;
     double totalAmount;
     String measurementUnit;
-    Integer relatedUserId;
+    UUID relatedUserUUID;
+
 }

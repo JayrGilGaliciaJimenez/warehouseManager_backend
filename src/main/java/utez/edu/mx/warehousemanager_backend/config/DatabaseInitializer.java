@@ -18,35 +18,35 @@ public class DatabaseInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         String createProductEntriesToStockTrigger = """
-                 CREATE TRIGGER IF NOT EXISTS product_entries_to_stock
-                    AFTER INSERT
-                    ON product_entries
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE existing_quantity INT;
-                
-                    -- Check if the product already exists in the stock table
-                    SELECT quantity
-                    INTO existing_quantity
-                    FROM stock
-                    WHERE productName = NEW.productName
-                      AND measurementUnit = NEW.measurementUnit;
-                
-                    IF existing_quantity IS NOT NULL THEN
-                        -- If the product exists, update the quantity and totalAmount
-                    UPDATE stock
-                    SET quantity     = quantity + NEW.quantity,
-                        totalAmount = (quantity) * NEW.unitPrice
-                    WHERE productName = NEW.productName
-                      AND measurementUnit = NEW.measurementUnit;
-                    ELSE
-                        -- If the product does not exist, insert a new record with totalAmount
-                        INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, supplierId)
-                        VALUES (NEW.id, NEW.productName, NEW.measurementUnit, NEW.quantity, NEW.unitPrice,
-                                NEW.quantity * NEW.unitPrice, NEW.supplierId);
-                END IF;
-                END;
-                """;
+    CREATE TRIGGER IF NOT EXISTS product_entries_to_stock
+        AFTER INSERT
+        ON product_entries
+        FOR EACH ROW
+    BEGIN
+        DECLARE existing_quantity INT;
+
+        -- Check if the product already exists in the stock table
+        SELECT quantity
+        INTO existing_quantity
+        FROM stock
+        WHERE productName = NEW.productName
+          AND measurementUnit = NEW.measurementUnit;
+
+        IF existing_quantity IS NOT NULL THEN
+            -- If the product exists, update the quantity and totalAmount
+            UPDATE stock
+            SET quantity     = quantity + NEW.quantity,
+                totalAmount = (quantity + NEW.quantity) * NEW.unitPrice
+            WHERE productName = NEW.productName
+              AND measurementUnit = NEW.measurementUnit;
+        ELSE
+            -- If the product does not exist, insert a new record with uuid
+            INSERT INTO stock (id, productName, measurementUnit, quantity, unitPrice, totalAmount, uuid)
+            VALUES (NEW.id, NEW.productName, NEW.measurementUnit, NEW.quantity, NEW.unitPrice,
+                    NEW.quantity * NEW.unitPrice, UUID());
+        END IF;
+    END;
+    """;
 
         String createProductOutsToStockTrigger = """
                 CREATE TRIGGER IF NOT EXISTS product_outs_to_stock
@@ -206,11 +206,11 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON product_entries
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_entries ORDER BY id DESC LIMIT 1;
+                    DECLARE var_relatedUserUUID UUID;
+                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_entries ORDER BY id DESC LIMIT 1;
                 
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('INSERT', 'product_entries', var_relatedUserId, CONCAT('Inserted product entry with id: ', NEW.id), UUID());
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('INSERT', 'product_entries', var_relatedUserUUID, CONCAT('Inserted product entry with id: ', NEW.id), UUID());
                 END;
                 """,
                 """
@@ -241,71 +241,65 @@ public class DatabaseInitializer implements CommandLineRunner {
                 END;
                 """,
                 """
-                CREATE TRIGGER IF NOT EXISTS after_product_outs_insert
-                    AFTER INSERT
-                    ON product_outs
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('INSERT', 'product_outs', var_relatedUserId, CONCAT('Inserted product out with id: ', NEW.id), UUID());
-                END;
-                """,
-                """
-                CREATE TRIGGER IF NOT EXISTS after_product_outs_insert
-                    AFTER INSERT
-                    ON product_outs
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('INSERT', 'product_outs', var_relatedUserId, CONCAT('Inserted product out with id: ', NEW.id), UUID());
-                END;
+                 CREATE TRIGGER IF NOT EXISTS after_product_outs_insert
+                                                    AFTER INSERT
+                                                    ON product_outs
+                                                    FOR EACH ROW
+                                                BEGIN
+                                                    DECLARE var_relatedUserUUID UUID;
+                                                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_outs ORDER BY id DESC LIMIT 1;
+                                              
+                                                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                                                    VALUES ('INSERT', 'product_outs', var_relatedUserId, CONCAT('Inserted product out with id: ', NEW.id), UUID());
+                                    END;
                 """,
                 """
                 CREATE TRIGGER IF NOT EXISTS after_product_outs_update
-                    AFTER UPDATE
-                    ON product_outs
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('UPDATE', 'product_outs', var_relatedUserId, CONCAT('Updated product out with id: ', NEW.id), UUID());
-                END;
+                                AFTER UPDATE
+                                ON product_outs
+                                FOR EACH ROW
+                            BEGIN
+                                INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                                VALUES ('UPDATE', 'product_outs', NEW.relatedUserUUID, CONCAT('Updated product out with id: ', NEW.id), UUID_TO_BIN(UUID()));
+                            END;
                 """,
+
                 """
-                CREATE TRIGGER IF NOT EXISTS after_product_outs_update
-                    AFTER UPDATE
-                    ON product_outs
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('UPDATE', 'product_outs', var_relatedUserId, CONCAT('Updated product out with id: ', NEW.id), UUID());
-                END;
-                """,
-                """
+                        
                 CREATE TRIGGER IF NOT EXISTS after_product_outs_delete
                     AFTER DELETE
                     ON product_outs
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_outs ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('DELETE', 'product_outs', var_relatedUserId, CONCAT('Deleted product out with name: ', OLD.productName), UUID());
+                    DECLARE var_relatedUserUUID UUID;
+                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_outs ORDER BY id DESC LIMIT 1;
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('DELETE', 'product_outs', OLD.relatedUserUUID, CONCAT('Deleted product out with name: ', OLD.productName), UUID_TO_BIN(UUID()));
                 END;
                 """
         };
+
+        String createProductOutsDeleteTrigger =
+    """
+    CREATE TRIGGER IF NOT EXISTS after_delete_product_outs
+        AFTER DELETE
+        ON product_outs
+        FOR EACH ROW
+    BEGIN
+        UPDATE stock
+        SET quantity = quantity + OLD.quantity,
+            totalAmount = (quantity + OLD.quantity) * unitPrice
+        WHERE productName = OLD.productName
+          AND measurementUnit = OLD.measurementUnit;
+    END;
+""";
+
+        try {
+            jdbcTemplate.execute(createProductOutsDeleteTrigger);
+            logger.info("Trigger 'after_delete_product_outs' created successfully.");
+        } catch (Exception e) {
+            logger.error("Error creating trigger 'after_delete_product_outs': ", e);
+        }
 
         try {
             jdbcTemplate.execute(createProductEntriesToStockTrigger);

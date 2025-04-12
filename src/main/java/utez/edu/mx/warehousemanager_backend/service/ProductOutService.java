@@ -4,12 +4,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
+import utez.edu.mx.warehousemanager_backend.controller.ProductOut.OutDto;
 import utez.edu.mx.warehousemanager_backend.controller.ProductOut.ProductOutDto;
+import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.model.ProductOut;
 import utez.edu.mx.warehousemanager_backend.repository.ProductOutRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductOutService {
@@ -19,20 +22,33 @@ public class ProductOutService {
         this.productOutRepository = productOutRepository;
     }
 
-    public ResponseEntity<ApiResponse<ProductOut>> save (ProductOutDto dto) {
-        ProductOut savedProductOut = ProductOut.builder()
-                .productName(dto.getProductName())
-                .unitPrice(dto.getUnitPrice())
-                .quantity(dto.getQuantity())
-                .totalAmount(dto.getTotalAmount())
-                .measurementUnit(dto.getMeasurementUnit())
-                .outDate(LocalDateTime.now())
-                .reciverName(dto.getReciverName())
-                .build();
+    public ResponseEntity<ApiResponse<List<ProductOutDto>>> save (OutDto outDto){
+        for (ProductOutDto productOutDto : outDto.getProductOutList()) {
+            String validationError = validateProductOut(productOutDto);
+            if (validationError != null) {
+                ApiResponse<List<ProductOutDto>> response = new ApiResponse<>(
+                        validationError,
+                        HttpStatus.CONFLICT
+                );
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
 
-        ApiResponse<ProductOut> response = new ApiResponse<>(
-                productOutRepository.save(savedProductOut),
-                "New product out created",
+            ProductOut productOut = ProductOut.builder()
+                    .productName(productOutDto.getProductName())
+                    .quantity(productOutDto.getQuantity())
+                    .unitPrice(productOutDto.getUnitPrice())
+                    .totalAmount(productOutDto.getQuantity() * productOutDto.getUnitPrice())
+                    .outDate(LocalDateTime.now())
+                    .measurementUnit(productOutDto.getMeasurementUnit())
+                    .receiverName(productOutDto.getReceiverName())
+                    .relatedUserUUID(productOutDto.getRelatedUserUUID())
+                    .build();
+            productOutRepository.save(productOut);
+        }
+
+        ApiResponse<List<ProductOutDto>> response = new ApiResponse<>(
+                outDto.getProductOutList(),
+                "New product outs registered successfully",
                 HttpStatus.OK
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -57,6 +73,7 @@ public class ProductOutService {
 
     }
 
+
     public ResponseEntity<ApiResponse<List<ProductOut>>> findAll() {
         ApiResponse<List<ProductOut>> response = new ApiResponse<>(
                 productOutRepository.findAll(),
@@ -66,5 +83,42 @@ public class ProductOutService {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
+
+    public ResponseEntity<ApiResponse<String>> deleteByUuid(UUID uuid){
+        ProductOut productOut = productOutRepository.findByUuid(uuid);
+        if (productOut != null){
+            productOutRepository.delete(productOut);
+            ApiResponse<String> response = new ApiResponse<>(
+                    "Product out deleted",
+                    HttpStatus.OK
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        ApiResponse<String> response = new ApiResponse<>(
+                "Product out not found",
+                HttpStatus.NOT_FOUND
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<ApiResponse<List<ProductOut>>> findByUser(UUID uuid) {
+        List<ProductOut> productOuts = productOutRepository.findAllByRelatedUserUUID(uuid);
+        if (!productOuts.isEmpty()) {
+            ApiResponse<List<ProductOut>> response = new ApiResponse<>(
+                    productOuts,
+                    "Product outs found for the related user",
+                    HttpStatus.OK
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            ApiResponse<List<ProductOut>> response = new ApiResponse<>(
+                    "No product outs found for the related user",
+                    HttpStatus.NOT_FOUND
+            );
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
 }
