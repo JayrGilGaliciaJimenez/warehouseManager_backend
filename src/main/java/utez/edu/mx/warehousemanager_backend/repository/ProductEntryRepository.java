@@ -10,4 +10,6 @@ public interface ProductEntryRepository extends JpaRepository<ProductEntry,Integ
 
     ProductEntry findByUuid(UUID uuid);
     List <ProductEntry> findAllByRelatedUserUUID(UUID uuid);
+    boolean existsByCategoryId(int categoryId);
+    boolean existsBySupplierId(int supplierId);
 }
