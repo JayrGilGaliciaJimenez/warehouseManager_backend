@@ -73,6 +73,25 @@ public class ProductOutService {
 
     }
 
+    private String validateProductOut(ProductOutDto productOutDto) {
+        if (productOutDto.getProductName() == null || productOutDto.getProductName().isBlank()) {
+            return "Product name cannot be empty or blank.";
+        }
+        if (productOutDto.getMeasurementUnit() == null || productOutDto.getMeasurementUnit().isBlank()) {
+            return "Measurement unit cannot be empty or blank.";
+        }
+        if (productOutDto.getQuantity() <= 0) {
+            return "Quantity must be greater than zero.";
+        }
+        if (productOutDto.getUnitPrice() <= 0) {
+            return "Unit price must be greater than zero.";
+        }
+        if (productOutDto.getRelatedUserUUID() == null) {
+            return "Related user UUID cannot be null.";
+        }
+        return null;
+    }
+
 
     public ResponseEntity<ApiResponse<List<ProductOut>>> findAll() {
         ApiResponse<List<ProductOut>> response = new ApiResponse<>(
