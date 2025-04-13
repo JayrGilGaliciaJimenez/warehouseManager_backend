@@ -24,7 +24,7 @@ public class Category {
     private LocalDateTime creationDate = LocalDateTime.now();
     private Integer relatedUserId;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<ProductEntry> productEntries;
 
