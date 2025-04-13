@@ -232,11 +232,11 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON product_entries
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_entries ORDER BY id DESC LIMIT 1;
+                    DECLARE var_relatedUserUUID UUID;
+                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_entries ORDER BY id DESC LIMIT 1;
                 
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('DELETE', 'product_entries', var_relatedUserId,
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('DELETE', 'product_entries', var_relatedUserUUID,
                             CONCAT('Deleted product entry with name: ', OLD.productName), UUID());
                 END;
                 """,
