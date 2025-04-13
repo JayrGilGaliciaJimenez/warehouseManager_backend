@@ -7,17 +7,20 @@ import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.Category.CategoryDto;
 import utez.edu.mx.warehousemanager_backend.model.Category;
 import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
+import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final ProductEntryRepository productEntryRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductEntryRepository productEntryRepository) {
         this.categoryRepository = categoryRepository;
+        this.productEntryRepository = productEntryRepository;
 
     }
 
@@ -27,8 +30,7 @@ public class CategoryService {
             ApiResponse<Category> response = new ApiResponse<>(
                     "Category already exists",
                     "E-01", // duplicate resource
-                    HttpStatus.CONFLICT
-            );
+                    HttpStatus.CONFLICT);
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
@@ -41,17 +43,15 @@ public class CategoryService {
         ApiResponse<Category> response = new ApiResponse<>(
                 categoryRepository.save(savedCategory),
                 "New category created",
-                HttpStatus.OK
-        );
+                HttpStatus.OK);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<ApiResponse<List<Category>>> findAll (){
+    public ResponseEntity<ApiResponse<List<Category>>> findAll() {
         ApiResponse<List<Category>> response = new ApiResponse<>(
                 categoryRepository.findAll(),
                 "All categories list",
-                HttpStatus.OK
-        );
+                HttpStatus.OK);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -60,7 +60,8 @@ public class CategoryService {
         try {
             realUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new ApiResponse<>("UUID inválido", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse<>("UUID inválido", HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
         }
 
         Category category = categoryRepository.findByUuid(realUuid);
@@ -70,8 +71,7 @@ public class CategoryService {
             ApiResponse<Category> response = new ApiResponse<>(
                     "Category not found",
                     "E-02", // not found
-                    HttpStatus.NOT_FOUND
-            );
+                    HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
@@ -81,19 +81,26 @@ public class CategoryService {
         try {
             realUuid = UUID.fromString(uuid);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new ApiResponse<>("UUID inválido", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse<>("UUID inválido", HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
         }
 
         Category category = categoryRepository.findByUuid(realUuid);
         if (category != null) {
+            boolean hasProductEntries = productEntryRepository.existsByCategoryId(category.getId());
+            if (hasProductEntries) {
+                return new ResponseEntity<>(
+                        new ApiResponse<>("Unable to delete the category because it is in use", HttpStatus.CONFLICT),
+                        HttpStatus.CONFLICT);
+            }
+
             categoryRepository.deleteById(category.getId());
             return new ResponseEntity<>(new ApiResponse<>("Category deleted", HttpStatus.OK), HttpStatus.OK);
         } else {
             ApiResponse<Void> response = new ApiResponse<>(
                     "Category not found",
                     "E-02", // not found
-                    HttpStatus.NOT_FOUND
-            );
+                    HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }

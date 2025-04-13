@@ -43,8 +43,9 @@ public class Security {
         return new BCryptPasswordEncoder();
     }
 
-    String USER = "USER";
-    String ADMIN = "ADMIN";
+    private static final String USER = "USER";
+    private static final  String ADMIN = "ADMIN";
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
