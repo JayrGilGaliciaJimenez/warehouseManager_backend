@@ -42,4 +42,14 @@ public class ProductOutController {
         return productOutService.deleteByUuid(uuid);
     }
 
+    @GetMapping("/grouped/user/{uuid}")
+    public ResponseEntity<ApiResponse<List<OutGroupDto>>> getGroupedOutsByUser(@PathVariable UUID uuid) {
+        return productOutService.findGroupedByUser(uuid);
+    }
+
+    @GetMapping("/grouped")
+    public ResponseEntity<ApiResponse<List<OutGroupDto>>> getAllGroupedOuts() {
+        return productOutService.findAllGrouped();
+    }
+
 }

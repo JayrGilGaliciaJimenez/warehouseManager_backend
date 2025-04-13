@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.ProductOut.OutDto;
+import utez.edu.mx.warehousemanager_backend.controller.ProductOut.OutGroupDto;
 import utez.edu.mx.warehousemanager_backend.controller.ProductOut.ProductOutDto;
 import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.model.ProductOut;
@@ -13,6 +14,7 @@ import utez.edu.mx.warehousemanager_backend.repository.ProductOutRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductOutService {
@@ -138,6 +140,30 @@ public class ProductOutService {
         }
     }
 
+    public ResponseEntity<ApiResponse<List<OutGroupDto>>> findGroupedByUser(UUID uuid) {
+        List<ProductOut> outs = productOutRepository.findAllByRelatedUserUUID(uuid);
+        List<OutGroupDto> grouped = groupOuts(outs);
+        return ResponseEntity.ok(new ApiResponse<>(grouped, "Grouped outs by user", HttpStatus.OK));
+    }
 
+    public ResponseEntity<ApiResponse<List<OutGroupDto>>> findAllGrouped() {
+        List<ProductOut> outs = productOutRepository.findAll();
+        List<OutGroupDto> grouped = groupOuts(outs);
+        return ResponseEntity.ok(new ApiResponse<>(grouped, "Grouped outs for admin", HttpStatus.OK));
+    }
+
+    private List<OutGroupDto> groupOuts(List<ProductOut> outs) {
+        return outs.stream()
+                .collect(Collectors.groupingBy(o -> o.getOutDate().withSecond(0).withNano(0).toString()))
+                .values()
+                .stream()
+                .map(group -> {
+                    return new OutGroupDto(
+                            group.get(0).getOutDate().withSecond(0).withNano(0),
+                            group.get(0).getReceiverName(),
+                            group
+                    );
+                }).collect(Collectors.toList());
+    }
 
 }
