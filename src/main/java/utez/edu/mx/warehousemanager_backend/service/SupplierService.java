@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.Supplier.SupplierDto;
 import utez.edu.mx.warehousemanager_backend.model.Supplier;
+import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
 import java.util.List;
 import java.util.UUID;
@@ -14,9 +15,11 @@ import java.util.regex.Pattern;
 @Service
 public class SupplierService {
     private final SupplierRepository supplierRepository;
+    private final ProductEntryRepository productEntryRepository;
 
-    public SupplierService(SupplierRepository supplierRepository) {
+    public SupplierService(SupplierRepository supplierRepository, ProductEntryRepository productEntryRepository) {
         this.supplierRepository = supplierRepository;
+        this.productEntryRepository = productEntryRepository;
     }
 
     public ResponseEntity<ApiResponse<Supplier>> save(SupplierDto supplierDto) {
@@ -24,8 +27,7 @@ public class SupplierService {
             ApiResponse<Supplier> response = new ApiResponse<>(
                     "Invalid email format.",
                     "E-01", // invalid input data
-                    HttpStatus.BAD_REQUEST
-            );
+                    HttpStatus.BAD_REQUEST);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -33,8 +35,7 @@ public class SupplierService {
             ApiResponse<Supplier> response = new ApiResponse<>(
                     "Ya existe un proveedor con ese email",
                     "E-03", // duplicate data
-                    HttpStatus.CONFLICT
-            );
+                    HttpStatus.CONFLICT);
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
@@ -42,13 +43,10 @@ public class SupplierService {
             ApiResponse<Supplier> response = new ApiResponse<>(
                     "Ya existe un proveedor con ese nombre",
                     "E-03", // duplicate data
-                    HttpStatus.CONFLICT
-            );
+                    HttpStatus.CONFLICT);
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 
-
         }
-
 
         Supplier supplier = Supplier.builder()
                 .name(supplierDto.getName())
@@ -59,8 +57,7 @@ public class SupplierService {
         ApiResponse<Supplier> response = new ApiResponse<>(
                 supplier,
                 "Supplier saved successfully.",
-                HttpStatus.OK
-        );
+                HttpStatus.OK);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -74,15 +71,13 @@ public class SupplierService {
         if (supplierRepository.findAll().isEmpty()) {
             ApiResponse<List<Supplier>> response = new ApiResponse<>(
                     "No suppliers registred",
-                    HttpStatus.NOT_FOUND
-            );
+                    HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } else {
             ApiResponse<List<Supplier>> response = new ApiResponse<>(
                     supplierRepository.findAll(),
                     "All suppliers list",
-                    HttpStatus.OK
-            );
+                    HttpStatus.OK);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
@@ -94,10 +89,12 @@ public class SupplierService {
             if (supplier != null) {
                 return ResponseEntity.ok(new ApiResponse<>(supplier, "Supplier found", HttpStatus.OK));
             } else {
-                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND),
+                        HttpStatus.NOT_FOUND);
             }
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new ApiResponse<>("Invalid UUID format", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse<>("Invalid UUID format", HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -106,13 +103,23 @@ public class SupplierService {
             UUID parsedUuid = UUID.fromString(uuid);
             Supplier supplier = supplierRepository.findByUuid(parsedUuid);
             if (supplier != null) {
+                boolean hasProductEntries = productEntryRepository.existsBySupplierId(supplier.getId());
+                if (hasProductEntries) {
+                    return new ResponseEntity<>(
+                            new ApiResponse<>("Unable to delete the supplier because it is in use",
+                                    HttpStatus.CONFLICT),
+                            HttpStatus.CONFLICT);
+                }
+
                 supplierRepository.deleteById(supplier.getId());
                 return new ResponseEntity<>(new ApiResponse<>("Supplier deleted", HttpStatus.OK), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND),
+                        HttpStatus.NOT_FOUND);
             }
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new ApiResponse<>("Invalid UUID format", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse<>("Invalid UUID format", HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
