@@ -7,8 +7,8 @@ import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.Supplier.SupplierDto;
 import utez.edu.mx.warehousemanager_backend.model.Supplier;
 import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
-
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -74,7 +74,6 @@ public class SupplierService {
         if (supplierRepository.findAll().isEmpty()) {
             ApiResponse<List<Supplier>> response = new ApiResponse<>(
                     "No suppliers registred",
-                    "E-02", // not found
                     HttpStatus.NOT_FOUND
             );
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -89,41 +88,31 @@ public class SupplierService {
     }
 
     public ResponseEntity<ApiResponse<Supplier>> findByUuid(String uuid) {
-        if (supplierRepository.findByUuid(uuid) != null) {
-            ApiResponse<Supplier> response = new ApiResponse<>(
-                    supplierRepository.findByUuid(uuid),
-                    "Supplier found",
-                    HttpStatus.OK
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            ApiResponse<Supplier> response = new ApiResponse<>(
-                    "Supplier not found",
-                    "E-02", // not found
-                    HttpStatus.NOT_FOUND
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        try {
+            UUID parsedUuid = UUID.fromString(uuid);
+            Supplier supplier = supplierRepository.findByUuid(parsedUuid);
+            if (supplier != null) {
+                return ResponseEntity.ok(new ApiResponse<>(supplier, "Supplier found", HttpStatus.OK));
+            } else {
+                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ApiResponse<>("Invalid UUID format", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
     }
 
     public ResponseEntity<ApiResponse<Void>> deleteByUuid(String uuid) {
-        Supplier supplier = supplierRepository.findByUuid(uuid);
-        if (supplier != null) {
-            supplierRepository.deleteById(supplier.getId());
-            ApiResponse<Void> response = new ApiResponse<>(
-                    "Suplier deleted",
-                    HttpStatus.OK
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-
-            ApiResponse<Void> response = new ApiResponse<>(
-                    "Suplier not found",
-                    "E-02", // not found
-                    HttpStatus.NOT_FOUND
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-
+        try {
+            UUID parsedUuid = UUID.fromString(uuid);
+            Supplier supplier = supplierRepository.findByUuid(parsedUuid);
+            if (supplier != null) {
+                supplierRepository.deleteById(supplier.getId());
+                return new ResponseEntity<>(new ApiResponse<>("Supplier deleted", HttpStatus.OK), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new ApiResponse<>("Invalid UUID format", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
     }
 
