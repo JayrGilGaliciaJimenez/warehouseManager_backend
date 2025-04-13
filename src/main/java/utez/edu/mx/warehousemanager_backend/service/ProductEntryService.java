@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
 import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.EntryDto;
+import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.EntryGroupDto;
 import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.ProductEntryDto;
 import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
 import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
@@ -12,7 +13,9 @@ import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
 import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductEntryService {
@@ -147,4 +150,52 @@ public class ProductEntryService {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
+    public ResponseEntity<ApiResponse<List<EntryGroupDto>>> findGroupedEntriesByUser(UUID uuid) {
+        List<ProductEntry> entries = productEntryRepository.findAllByRelatedUserUUID(uuid);
+
+        Map<String, List<ProductEntry>> grouped = entries.stream()
+                .collect(Collectors.groupingBy(e -> e.getEntryDate().withSecond(0).withNano(0).toString()));
+
+        List<EntryGroupDto> groupedEntries = grouped.values().stream()
+                .map(productList -> {
+                    return new EntryGroupDto(
+                            productList.get(0).getEntryDate().withSecond(0).withNano(0),
+                            productList.get(0).getSupplier().getName(),
+                            productList
+                    );
+                }).toList();
+
+        ApiResponse<List<EntryGroupDto>> response = new ApiResponse<>(
+                groupedEntries,
+                "Grouped entries found for the related user",
+                HttpStatus.OK
+        );
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ApiResponse<List<EntryGroupDto>>> findAllGroupedEntries() {
+        List<ProductEntry> entries = productEntryRepository.findAll();
+
+        List<EntryGroupDto> groupedEntries = groupEntries(entries);
+
+        return ResponseEntity.ok(new ApiResponse<>(groupedEntries, "Grouped entries for admin", HttpStatus.OK));
+    }
+
+    private List<EntryGroupDto> groupEntries(List<ProductEntry> entries) {
+        Map<String, List<ProductEntry>> grouped = entries.stream()
+                .collect(Collectors.groupingBy(e ->
+                        e.getEntryDate().withSecond(0).withNano(0).toString()
+                ));
+
+        return grouped.values().stream()
+                .map(group -> {
+                    return new EntryGroupDto(
+                            group.get(0).getEntryDate().withSecond(0).withNano(0),
+                            group.get(0).getSupplier() != null ? group.get(0).getSupplier().getName() : "Sin proveedor",
+                            group
+                    );
+                }).collect(Collectors.toList());
+    }
+
 }

@@ -37,6 +37,18 @@ public class ProductEntryController {
     public ResponseEntity<ApiResponse<List<ProductEntry>>>getEntriesByUser(@PathVariable UUID uuid){
         return productEntryService.findByUser(uuid);
     }
+
+    @GetMapping("/grouped/user/{uuid}")
+    public ResponseEntity<ApiResponse<List<EntryGroupDto>>> getGroupedEntriesByUser(@PathVariable UUID uuid) {
+        return productEntryService.findGroupedEntriesByUser(uuid);
+    }
+
+    @GetMapping("/grouped")
+    public ResponseEntity<ApiResponse<List<EntryGroupDto>>> getAllGroupedEntries( ) {
+        return productEntryService.findAllGroupedEntries();
+    }
+
+
     @DeleteMapping("/{uuid}")
     public ResponseEntity<ApiResponse<String>> deleteById(@PathVariable UUID uuid){
         return productEntryService.deleteByUuid(uuid);
