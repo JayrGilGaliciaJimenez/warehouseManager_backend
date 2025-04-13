@@ -19,7 +19,7 @@ public class Stock {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Column(name = "id", nullable = false)
    private Integer id;
-   private UUID uuid;
+   private String uuid;
    private String productName;
    private String measurementUnit;
    private int quantity;
@@ -27,15 +27,4 @@ public class Stock {
    private double unitPrice;
    @Column(columnDefinition = "DECIMAL(10, 2) DEFAULT 00.00")
    private double totalAmount;
-   private Integer supplierId;
-
-
-    @PrePersist
-    public void generateUUID() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-    }
-
-
 }

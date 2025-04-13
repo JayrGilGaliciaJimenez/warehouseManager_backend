@@ -23,6 +23,7 @@ public class SupplierService {
         if (!isValidEmail(supplierDto.getEmail())) {
             ApiResponse<Supplier> response = new ApiResponse<>(
                     "Invalid email format.",
+                    "E-01", // invalid input data
                     HttpStatus.BAD_REQUEST
             );
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -30,11 +31,25 @@ public class SupplierService {
 
         if (supplierRepository.existsByEmail(supplierDto.getEmail())) {
             ApiResponse<Supplier> response = new ApiResponse<>(
-                    "A supplier with this email already exists.",
+                    "Ya existe un proveedor con ese email",
+                    "E-03", // duplicate data
                     HttpStatus.CONFLICT
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
+
+        if (supplierRepository.existsByNameIsLike(supplierDto.getName())) {
+            ApiResponse<Supplier> response = new ApiResponse<>(
+                    "Ya existe un proveedor con ese nombre",
+                    "E-03", // duplicate data
+                    HttpStatus.CONFLICT
+            );
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+
+        }
+
+
         Supplier supplier = Supplier.builder()
                 .name(supplierDto.getName())
                 .email(supplierDto.getEmail())
@@ -71,7 +86,6 @@ public class SupplierService {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
-
 
     public ResponseEntity<ApiResponse<Supplier>> findByUuid(String uuid) {
         try {

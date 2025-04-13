@@ -25,9 +25,8 @@ public class ProductOut {
     private double unitPrice;
     private double totalAmount;
     private LocalDateTime outDate = LocalDateTime.now();
-    private String reciverName;
-    private Integer relatedUserId;
-
+    private String receiverName;
+    private UUID relatedUserUUID;
 
 
     @PrePersist

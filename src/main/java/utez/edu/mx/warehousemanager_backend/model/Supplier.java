@@ -23,6 +23,7 @@ public class Supplier {
     @Column(name = "id", nullable = false)
     private Integer id;
     private UUID uuid;
+    @Column(nullable = false, unique = true)
     private String name;
     @Column(nullable = false, unique = true)
     @Email(message = "Invalid email format")

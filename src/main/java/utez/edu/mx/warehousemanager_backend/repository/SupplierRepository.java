@@ -12,9 +12,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
     Supplier findByUuid(UUID uuid);
 
 
-    @Query(value = "SELECT COUNT(s) FROM Supplier s WHERE s.name LIKE %:name%")
-    int countCoincidencesByName(String name);
-
     boolean existsByEmail(String email);
 
+    boolean existsByNameIsLike(String name);
 }
