@@ -24,4 +24,11 @@ public class ApiResponse<T> {
         this.message = message;
         this.status = status;
     }
+
+    public ApiResponse(String message, String errorCode, HttpStatus status) {
+        this.message = message;
+        this.errorCode = errorCode;
+        this.status = status;
+    }
+
 }

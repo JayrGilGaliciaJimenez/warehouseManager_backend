@@ -13,7 +13,7 @@ import java.util.UUID;
 
 
 @Service
-public class    CategoryService {
+public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public CategoryService(CategoryRepository categoryRepository) {
@@ -26,6 +26,7 @@ public class    CategoryService {
         if (existingCategoriesCount > 0) {
             ApiResponse<Category> response = new ApiResponse<>(
                     "Category already exists",
+                    "E-01", // duplicate resource
                     HttpStatus.CONFLICT
             );
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -66,7 +67,12 @@ public class    CategoryService {
         if (category != null) {
             return new ResponseEntity<>(new ApiResponse<>(category, "Category found", HttpStatus.OK), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new ApiResponse<>("Category not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+            ApiResponse<Category> response = new ApiResponse<>(
+                    "Category not found",
+                    "E-02", // not found
+                    HttpStatus.NOT_FOUND
+            );
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -83,7 +89,13 @@ public class    CategoryService {
             categoryRepository.deleteById(category.getId());
             return new ResponseEntity<>(new ApiResponse<>("Category deleted", HttpStatus.OK), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new ApiResponse<>("Category not found", HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+            ApiResponse<Void> response = new ApiResponse<>(
+                    "Category not found",
+                    "E-02", // not found
+                    HttpStatus.NOT_FOUND
+            );
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
 }
