@@ -36,7 +36,6 @@ public class CategoryService {
 
         Category savedCategory = Category.builder()
                 .name(dto.getName().trim())
-                .relatedUserId(dto.getRelatedUserId())
                 .creationDate(LocalDateTime.now())
                 .build();
 

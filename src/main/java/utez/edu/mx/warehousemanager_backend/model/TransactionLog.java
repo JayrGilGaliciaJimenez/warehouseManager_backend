@@ -24,7 +24,7 @@ public class TransactionLog {
     private UUID uuid;
     private String transactionType;
     private String tableName;
-    private Integer relatedUserId;
+    private UUID relatedUserUUID;
     private String details;
     @Column(name = "transactionDate", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime transactionDate;

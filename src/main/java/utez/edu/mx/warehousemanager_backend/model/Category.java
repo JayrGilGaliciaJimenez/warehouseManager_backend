@@ -22,7 +22,6 @@ public class Category {
     private UUID uuid;
     private String name;
     private LocalDateTime creationDate = LocalDateTime.now();
-    private Integer relatedUserId;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @JsonIgnore

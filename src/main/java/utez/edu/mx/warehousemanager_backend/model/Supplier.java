@@ -29,8 +29,6 @@ public class Supplier {
     @Email(message = "Invalid email format")
     private String email;
     private LocalDateTime creationDate = LocalDateTime.now();
-    private Integer relatedUserId;
-
     @OneToMany(mappedBy = "supplier")
     @JsonIgnore
     private Set<ProductEntry> productEntries = new HashSet<>();
