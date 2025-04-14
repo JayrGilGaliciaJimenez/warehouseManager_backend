@@ -1,16 +1,14 @@
 package utez.edu.mx.warehousemanager.controller;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.*;
-
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import utez.edu.mx.warehousemanager.jwt.AuthRequest;
 import utez.edu.mx.warehousemanager.jwt.AuthResponse;
 import utez.edu.mx.warehousemanager.jwt.JwtTokenUtil;
@@ -19,23 +17,24 @@ import utez.edu.mx.warehousemanager.model.UserModel;
 import utez.edu.mx.warehousemanager.repository.AccessLogRepository;
 import utez.edu.mx.warehousemanager.service.UserService;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @RestController
 @Slf4j
 @RequestMapping("/api")
 public class AccessController {
 
-    private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
     private final AccessLogRepository accessLogRepository;
 
-
-    public AccessController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, UserService userService, AccessLogRepository accessLogRepository) {
-        this.authenticationManager = authenticationManager;
+    public AccessController(JwtTokenUtil jwtTokenUtil, UserService userService, AccessLogRepository accessLogRepository) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.userService = userService;
         this.accessLogRepository = accessLogRepository;
     }
+
     @PostMapping("/auth/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request, HttpServletRequest httpRequest) {
         String ipAddress = httpRequest.getHeader("X-Forwarded-For");
