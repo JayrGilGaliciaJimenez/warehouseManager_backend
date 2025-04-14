@@ -1,4 +1,4 @@
-package utez.edu.mx.warehousemanager.controller.Supplier;
+package utez.edu.mx.warehousemanager.controller.supplier;
 
 import lombok.Value;
 import utez.edu.mx.warehousemanager.model.Supplier;

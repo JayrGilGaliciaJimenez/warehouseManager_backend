@@ -48,6 +48,8 @@ public class Security {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // CSRF protection is disabled because this application is a stateless REST API
+        // and uses JWT for authentication, which is not vulnerable to CSRF attacks.
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> exception

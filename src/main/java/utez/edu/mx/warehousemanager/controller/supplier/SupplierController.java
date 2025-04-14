@@ -1,4 +1,4 @@
-package utez.edu.mx.warehousemanager.controller.Supplier;
+package utez.edu.mx.warehousemanager.controller.supplier;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

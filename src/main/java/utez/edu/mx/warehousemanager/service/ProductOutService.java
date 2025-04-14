@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager.config.ApiResponse;
-import utez.edu.mx.warehousemanager.controller.ProductOut.OutDto;
-import utez.edu.mx.warehousemanager.controller.ProductOut.OutGroupDto;
-import utez.edu.mx.warehousemanager.controller.ProductOut.ProductOutDto;
+import utez.edu.mx.warehousemanager.controller.productout.OutDto;
+import utez.edu.mx.warehousemanager.controller.productout.OutGroupDto;
+import utez.edu.mx.warehousemanager.controller.productout.ProductOutDto;
 import utez.edu.mx.warehousemanager.model.ProductOut;
 import utez.edu.mx.warehousemanager.repository.ProductOutRepository;
 
