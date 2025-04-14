@@ -1,15 +1,14 @@
-package utez.edu.mx.warehousemanager_backend.service;
+package utez.edu.mx.warehousemanager.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
-import utez.edu.mx.warehousemanager_backend.controller.ProductOut.OutDto;
-import utez.edu.mx.warehousemanager_backend.controller.ProductOut.OutGroupDto;
-import utez.edu.mx.warehousemanager_backend.controller.ProductOut.ProductOutDto;
-import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
-import utez.edu.mx.warehousemanager_backend.model.ProductOut;
-import utez.edu.mx.warehousemanager_backend.repository.ProductOutRepository;
+import utez.edu.mx.warehousemanager.config.ApiResponse;
+import utez.edu.mx.warehousemanager.controller.ProductOut.OutDto;
+import utez.edu.mx.warehousemanager.controller.ProductOut.OutGroupDto;
+import utez.edu.mx.warehousemanager.controller.ProductOut.ProductOutDto;
+import utez.edu.mx.warehousemanager.model.ProductOut;
+import utez.edu.mx.warehousemanager.repository.ProductOutRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +23,7 @@ public class ProductOutService {
         this.productOutRepository = productOutRepository;
     }
 
-    public ResponseEntity<ApiResponse<List<ProductOutDto>>> save (OutDto outDto){
+    public ResponseEntity<ApiResponse<List<ProductOutDto>>> save(OutDto outDto) {
         for (ProductOutDto productOutDto : outDto.getProductOutList()) {
             String validationError = validateProductOut(productOutDto);
             if (validationError != null) {
@@ -56,15 +55,15 @@ public class ProductOutService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<ApiResponse<ProductOut>> findByUuid(String uuid){
-        if(productOutRepository.findByUuid(uuid) != null){
+    public ResponseEntity<ApiResponse<ProductOut>> findByUuid(String uuid) {
+        if (productOutRepository.findByUuid(uuid) != null) {
             ApiResponse<ProductOut> response = new ApiResponse<>(
                     productOutRepository.findByUuid(uuid),
                     "Product out found",
                     HttpStatus.OK
             );
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }else{
+        } else {
             ApiResponse<ProductOut> response = new ApiResponse<>(
                     "Product out not found",
                     "E-02", // not found
@@ -105,9 +104,9 @@ public class ProductOutService {
 
     }
 
-    public ResponseEntity<ApiResponse<String>> deleteByUuid(UUID uuid){
+    public ResponseEntity<ApiResponse<String>> deleteByUuid(UUID uuid) {
         ProductOut productOut = productOutRepository.findByUuid(uuid);
-        if (productOut != null){
+        if (productOut != null) {
             productOutRepository.delete(productOut);
             ApiResponse<String> response = new ApiResponse<>(
                     "Product out deleted",
@@ -157,13 +156,11 @@ public class ProductOutService {
                 .collect(Collectors.groupingBy(o -> o.getOutDate().withSecond(0).withNano(0).toString()))
                 .values()
                 .stream()
-                .map(group -> {
-                    return new OutGroupDto(
-                            group.get(0).getOutDate().withSecond(0).withNano(0),
-                            group.get(0).getReceiverName(),
-                            group
-                    );
-                }).collect(Collectors.toList());
+                .map(group -> new OutGroupDto(
+                        group.get(0).getOutDate().withSecond(0).withNano(0),
+                        group.get(0).getReceiverName(),
+                        group
+                )).collect(Collectors.toList());
     }
 
 }

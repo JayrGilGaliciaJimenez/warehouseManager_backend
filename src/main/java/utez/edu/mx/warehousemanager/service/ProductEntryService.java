@@ -1,16 +1,17 @@
-package utez.edu.mx.warehousemanager_backend.service;
+package utez.edu.mx.warehousemanager.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import utez.edu.mx.warehousemanager_backend.config.ApiResponse;
-import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.EntryDto;
-import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.EntryGroupDto;
-import utez.edu.mx.warehousemanager_backend.controller.ProductEntry.ProductEntryDto;
-import utez.edu.mx.warehousemanager_backend.model.ProductEntry;
-import utez.edu.mx.warehousemanager_backend.repository.CategoryRepository;
-import utez.edu.mx.warehousemanager_backend.repository.ProductEntryRepository;
-import utez.edu.mx.warehousemanager_backend.repository.SupplierRepository;
+import utez.edu.mx.warehousemanager.config.ApiResponse;
+import utez.edu.mx.warehousemanager.controller.ProductEntry.EntryDto;
+import utez.edu.mx.warehousemanager.controller.ProductEntry.EntryGroupDto;
+import utez.edu.mx.warehousemanager.controller.ProductEntry.ProductEntryDto;
+import utez.edu.mx.warehousemanager.model.ProductEntry;
+import utez.edu.mx.warehousemanager.repository.CategoryRepository;
+import utez.edu.mx.warehousemanager.repository.ProductEntryRepository;
+import utez.edu.mx.warehousemanager.repository.SupplierRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class ProductEntryService {
         return null;
     }
 
-    public ResponseEntity<ApiResponse<List<ProductEntry>>> findAll(){
+    public ResponseEntity<ApiResponse<List<ProductEntry>>> findAll() {
         ApiResponse<List<ProductEntry>> response = new ApiResponse<>(
                 productEntryRepository.findAll(),
                 "All product entries list",
@@ -96,8 +97,8 @@ public class ProductEntryService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<ApiResponse<ProductEntry>> findByUuid(UUID uuid){
-        if(productEntryRepository.findByUuid(uuid) != null){
+    public ResponseEntity<ApiResponse<ProductEntry>> findByUuid(UUID uuid) {
+        if (productEntryRepository.findByUuid(uuid) != null) {
             ApiResponse<ProductEntry> response = new ApiResponse<>(
                     productEntryRepository.findByUuid(uuid),
                     "Product entry found",
@@ -115,9 +116,9 @@ public class ProductEntryService {
         }
     }
 
-    public ResponseEntity<ApiResponse<String>> deleteByUuid(UUID uuid){
+    public ResponseEntity<ApiResponse<String>> deleteByUuid(UUID uuid) {
         ProductEntry productEntry = productEntryRepository.findByUuid(uuid);
-        if (productEntry != null){
+        if (productEntry != null) {
             productEntryRepository.delete(productEntry);
             ApiResponse<String> response = new ApiResponse<>(
                     "Product entry deleted",
@@ -158,13 +159,11 @@ public class ProductEntryService {
                 .collect(Collectors.groupingBy(e -> e.getEntryDate().withSecond(0).withNano(0).toString()));
 
         List<EntryGroupDto> groupedEntries = grouped.values().stream()
-                .map(productList -> {
-                    return new EntryGroupDto(
-                            productList.get(0).getEntryDate().withSecond(0).withNano(0),
-                            productList.get(0).getSupplier().getName(),
-                            productList
-                    );
-                }).toList();
+                .map(productList -> new EntryGroupDto(
+                        productList.get(0).getEntryDate().withSecond(0).withNano(0),
+                        productList.get(0).getSupplier().getName(),
+                        productList
+                )).toList();
 
         ApiResponse<List<EntryGroupDto>> response = new ApiResponse<>(
                 groupedEntries,
@@ -189,13 +188,11 @@ public class ProductEntryService {
                 ));
 
         return grouped.values().stream()
-                .map(group -> {
-                    return new EntryGroupDto(
-                            group.get(0).getEntryDate().withSecond(0).withNano(0),
-                            group.get(0).getSupplier() != null ? group.get(0).getSupplier().getName() : "Sin proveedor",
-                            group
-                    );
-                }).collect(Collectors.toList());
+                .map(group -> new EntryGroupDto(
+                        group.get(0).getEntryDate().withSecond(0).withNano(0),
+                        group.get(0).getSupplier() != null ? group.get(0).getSupplier().getName() : "Sin proveedor",
+                        group
+                )).toList();
     }
 
 }
