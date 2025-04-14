@@ -120,11 +120,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON suppliers
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM suppliers ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('INSERT', 'suppliers', var_relatedUserId, CONCAT('Inserted supplier with id: ', NEW.id), UUID());
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('INSERT', 'suppliers', null, CONCAT('Inserted supplier with id: ', NEW.id), UUID());
                 
                 END;
                 """,
@@ -134,11 +131,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON suppliers
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM suppliers ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('UPDATE', 'suppliers', var_relatedUserId, CONCAT('Updated supplier with id: ', NEW.id), UUID());
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('UPDATE', 'suppliers', null, CONCAT('Updated supplier with id: ', NEW.id), UUID());
                 
                 END;
                 """,
@@ -148,11 +142,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON suppliers
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM suppliers ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('DELETE', 'suppliers', var_relatedUserId, CONCAT('Deleted supplier with name: ', OLD.name), UUID());
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('DELETE', 'suppliers', null, CONCAT('Deleted supplier with name: ', OLD.name), UUID());
                 
                 END;
                 """,
@@ -162,11 +153,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON categories
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM categories ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('INSERT', 'categories', var_relatedUserId, CONCAT('Inserted category with id: ', NEW.id), UUID());
+                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('INSERT', 'categories', null, CONCAT('Inserted category with id: ', NEW.id), UUID());
                 
                 END;
                 """,
@@ -177,12 +165,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON categories
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                
-                    SELECT relatedUserId INTO var_relatedUserId FROM categories ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('UPDATE', 'categories', var_relatedUserId, CONCAT('Updated category with id: ', NEW.id), UUID());
+                   INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('UPDATE', 'categories', null, CONCAT('Updated category with id: ', NEW.id), UUID());
                 
                 END;
                 """,
@@ -192,90 +176,67 @@ public class DatabaseInitializer implements CommandLineRunner {
                     ON categories
                     FOR EACH ROW
                 BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM categories ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('DELETE', 'categories', var_relatedUserId, CONCAT('Deleted category with name: ', OLD.name), UUID());
+                   INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                    VALUES ('DELETE', 'categories', null, CONCAT('Deleted category with name: ', OLD.name), UUID());
                 
                 END;
                 """,
                 """
                 CREATE TRIGGER IF NOT EXISTS after_product_entries_insert
-                    AFTER INSERT
-                    ON product_entries
+                    AFTER INSERT ON product_entries
                     FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserUUID UUID;
-                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_entries ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
-                    VALUES ('INSERT', 'product_entries', var_relatedUserUUID, CONCAT('Inserted product entry with id: ', NEW.id), UUID());
-                END;
+                    BEGIN
+                        INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                        VALUES ('INSERT', 'product_entries', NEW.relatedUserUUID, CONCAT('Inserted product entry with id: ', NEW.id), UUID());
+                    END;
+                    
                 """,
                 """
                 CREATE TRIGGER IF NOT EXISTS after_product_entries_update
-                    AFTER UPDATE
-                    ON product_entries
+                    AFTER UPDATE ON product_entries
                     FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserId INT;
-                    SELECT relatedUserId INTO var_relatedUserId FROM product_entries ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserId, details, uuid)
-                    VALUES ('UPDATE', 'product_entries', var_relatedUserId, CONCAT('Updated product entry with id: ', NEW.id), UUID());
-                END;
+                    BEGIN
+                        INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                        VALUES ('UPDATE', 'product_entries', NEW.relatedUserUUID, CONCAT('Updated product entry with id: ', NEW.id), UUID());
+                    END;
+                    
                 """,
                 """
                 CREATE TRIGGER IF NOT EXISTS after_product_entries_delete
-                    AFTER DELETE
-                    ON product_entries
+                    AFTER DELETE ON product_entries
                     FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserUUID UUID;
-                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_entries ORDER BY id DESC LIMIT 1;
-                
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
-                    VALUES ('DELETE', 'product_entries', var_relatedUserUUID,
-                            CONCAT('Deleted product entry with name: ', OLD.productName), UUID());
-                END;
+                    BEGIN
+                        INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                        VALUES ('DELETE', 'product_entries', OLD.relatedUserUUID, CONCAT('Deleted product entry with name: ', OLD.productName), UUID());
+                    END;
                 """,
                 """
-                 CREATE TRIGGER IF NOT EXISTS after_product_outs_insert
-                                                    AFTER INSERT
-                                                    ON product_outs
-                                                    FOR EACH ROW
-                                                BEGIN
-                                                    DECLARE var_relatedUserUUID UUID;
-                                                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_outs ORDER BY id DESC LIMIT 1;
-                                              
-                                                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
-                                                    VALUES ('INSERT', 'product_outs', var_relatedUserId, CONCAT('Inserted product out with id: ', NEW.id), UUID());
-                                    END;
+                CREATE TRIGGER IF NOT EXISTS after_product_outs_insert
+                   AFTER INSERT ON product_outs
+                   FOR EACH ROW
+                   BEGIN
+                       INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                       VALUES ('INSERT', 'product_outs', NEW.relatedUserUUID, CONCAT('Inserted product out with id: ', NEW.id), UUID());
+                   END;
                 """,
                 """
                 CREATE TRIGGER IF NOT EXISTS after_product_outs_update
-                                AFTER UPDATE
-                                ON product_outs
-                                FOR EACH ROW
-                            BEGIN
-                                INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
-                                VALUES ('UPDATE', 'product_outs', NEW.relatedUserUUID, CONCAT('Updated product out with id: ', NEW.id), UUID_TO_BIN(UUID()));
-                            END;
+                     AFTER UPDATE ON product_outs
+                     FOR EACH ROW
+                     BEGIN
+                          INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                          VALUES ('UPDATE', 'product_outs', NEW.relatedUserUUID, CONCAT('Updated product out with id: ', NEW.id), UUID());
+                     END;           
                 """,
-
-                """
-                        
-                CREATE TRIGGER IF NOT EXISTS after_product_outs_delete
-                    AFTER DELETE
-                    ON product_outs
-                    FOR EACH ROW
-                BEGIN
-                    DECLARE var_relatedUserUUID UUID;
-                    SELECT relatedUserUUID INTO var_relatedUserUUID FROM product_outs ORDER BY id DESC LIMIT 1;
-                    INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
-                    VALUES ('DELETE', 'product_outs', OLD.relatedUserUUID, CONCAT('Deleted product out with name: ', OLD.productName), UUID_TO_BIN(UUID()));
-                END;
+                """      
+               CREATE TRIGGER IF NOT EXISTS after_product_outs_delete
+               AFTER DELETE ON product_outs
+               FOR EACH ROW
+               BEGIN
+                   INSERT INTO transaction_log (transactionType, tableName, relatedUserUUID, details, uuid)
+                   VALUES ('DELETE', 'product_outs', OLD.relatedUserUUID, CONCAT('Deleted product out with name: ', OLD.productName), UUID());
+               END;
+               
                 """
         };
 

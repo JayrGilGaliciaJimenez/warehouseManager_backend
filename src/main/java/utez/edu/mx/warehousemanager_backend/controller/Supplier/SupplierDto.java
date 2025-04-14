@@ -12,5 +12,4 @@ import java.io.Serializable;
 public class SupplierDto implements Serializable {
     String name;
     String email;
-    Integer relatedUserId;
 }
