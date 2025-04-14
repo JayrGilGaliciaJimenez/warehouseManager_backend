@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager.config.ApiResponse;
-import utez.edu.mx.warehousemanager.controller.Category.CategoryDto;
+import utez.edu.mx.warehousemanager.controller.category.CategoryDto;
 import utez.edu.mx.warehousemanager.model.Category;
 import utez.edu.mx.warehousemanager.repository.CategoryRepository;
 import utez.edu.mx.warehousemanager.repository.ProductEntryRepository;
@@ -28,7 +28,7 @@ public class CategoryService {
         int existingCategoriesCount = categoryRepository.countCoincidencesByName(dto.getName().trim());
         if (existingCategoriesCount > 0) {
             ApiResponse<Category> response = new ApiResponse<>(
-                    "Category already exists",
+                    "category already exists",
                     "E-01", // duplicate resource
                     HttpStatus.CONFLICT);
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -65,10 +65,10 @@ public class CategoryService {
 
         Category category = categoryRepository.findByUuid(realUuid);
         if (category != null) {
-            return new ResponseEntity<>(new ApiResponse<>(category, "Category found", HttpStatus.OK), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>(category, "category found", HttpStatus.OK), HttpStatus.OK);
         } else {
             ApiResponse<Category> response = new ApiResponse<>(
-                    "Category not found",
+                    "category not found",
                     "E-02", // not found
                     HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -94,10 +94,10 @@ public class CategoryService {
             }
 
             categoryRepository.deleteById(category.getId());
-            return new ResponseEntity<>(new ApiResponse<>("Category deleted", HttpStatus.OK), HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse<>("category deleted", HttpStatus.OK), HttpStatus.OK);
         } else {
             ApiResponse<Void> response = new ApiResponse<>(
-                    "Category not found",
+                    "category not found",
                     "E-02", // not found
                     HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

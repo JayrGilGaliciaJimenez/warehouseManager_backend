@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager.config.ApiResponse;
-import utez.edu.mx.warehousemanager.controller.ProductEntry.EntryDto;
-import utez.edu.mx.warehousemanager.controller.ProductEntry.EntryGroupDto;
-import utez.edu.mx.warehousemanager.controller.ProductEntry.ProductEntryDto;
+import utez.edu.mx.warehousemanager.controller.productentry.EntryDto;
+import utez.edu.mx.warehousemanager.controller.productentry.EntryGroupDto;
+import utez.edu.mx.warehousemanager.controller.productentry.ProductEntryDto;
 import utez.edu.mx.warehousemanager.model.ProductEntry;
 import utez.edu.mx.warehousemanager.repository.CategoryRepository;
 import utez.edu.mx.warehousemanager.repository.ProductEntryRepository;
@@ -80,10 +80,10 @@ public class ProductEntryService {
             return "Unit price must be greater than zero.";
         }
         if (productEntryDto.getSupplierId() == null) {
-            return "Supplier ID cannot be null.";
+            return "supplier ID cannot be null.";
         }
         if (productEntryDto.getCategoryId() == null) {
-            return "Category ID cannot be null.";
+            return "category ID cannot be null.";
         }
         return null;
     }

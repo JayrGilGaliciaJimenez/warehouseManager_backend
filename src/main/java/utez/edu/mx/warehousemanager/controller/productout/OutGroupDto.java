@@ -1,4 +1,4 @@
-package utez.edu.mx.warehousemanager.controller.ProductOut;
+package utez.edu.mx.warehousemanager.controller.productout;
 
 import lombok.Value;
 import utez.edu.mx.warehousemanager.model.ProductOut;

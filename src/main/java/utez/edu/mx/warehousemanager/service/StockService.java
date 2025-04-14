@@ -21,13 +21,13 @@ public class StockService {
         if(stockRepository.findByUuid(uuid) != null) {
             ApiResponse<Stock> response = new ApiResponse<>(
                     stockRepository.findByUuid(uuid),
-                    "Stock found",
+                    "stock found",
                     HttpStatus.OK
             );
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             ApiResponse<Stock> response = new ApiResponse<>(
-                    "Stock not found",
+                    "stock not found",
                     "E-02", // not found
                     HttpStatus.NOT_FOUND
             );

@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import utez.edu.mx.warehousemanager.config.ApiResponse;
-import utez.edu.mx.warehousemanager.controller.Supplier.SupplierDto;
+import utez.edu.mx.warehousemanager.controller.supplier.SupplierDto;
 import utez.edu.mx.warehousemanager.model.Supplier;
 import utez.edu.mx.warehousemanager.repository.ProductEntryRepository;
 import utez.edu.mx.warehousemanager.repository.SupplierRepository;
@@ -56,7 +56,7 @@ public class SupplierService {
         supplierRepository.save(supplier);
         ApiResponse<Supplier> response = new ApiResponse<>(
                 supplier,
-                "Supplier saved successfully.",
+                "supplier saved successfully.",
                 HttpStatus.OK);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -87,9 +87,9 @@ public class SupplierService {
             UUID parsedUuid = UUID.fromString(uuid);
             Supplier supplier = supplierRepository.findByUuid(parsedUuid);
             if (supplier != null) {
-                return ResponseEntity.ok(new ApiResponse<>(supplier, "Supplier found", HttpStatus.OK));
+                return ResponseEntity.ok(new ApiResponse<>(supplier, "supplier found", HttpStatus.OK));
             } else {
-                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND),
+                return new ResponseEntity<>(new ApiResponse<>("supplier not found", HttpStatus.NOT_FOUND),
                         HttpStatus.NOT_FOUND);
             }
         } catch (IllegalArgumentException e) {
@@ -112,9 +112,9 @@ public class SupplierService {
                 }
 
                 supplierRepository.deleteById(supplier.getId());
-                return new ResponseEntity<>(new ApiResponse<>("Supplier deleted", HttpStatus.OK), HttpStatus.OK);
+                return new ResponseEntity<>(new ApiResponse<>("supplier deleted", HttpStatus.OK), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(new ApiResponse<>("Supplier not found", HttpStatus.NOT_FOUND),
+                return new ResponseEntity<>(new ApiResponse<>("supplier not found", HttpStatus.NOT_FOUND),
                         HttpStatus.NOT_FOUND);
             }
         } catch (IllegalArgumentException e) {

@@ -1,4 +1,4 @@
-package utez.edu.mx.warehousemanager.controller.Category;
+package utez.edu.mx.warehousemanager.controller.category;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
